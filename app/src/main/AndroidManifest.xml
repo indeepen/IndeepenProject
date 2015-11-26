@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.release.indeepen" >
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+
+    <permission
+        android:name="com.release.indeepen.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.release.indeepen.permission.C2D_MESSAGE" />
+
+    <application
+        android:name=".SharedApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:largeHeap="true"
+        android:adjustViewBounds="true">
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.NoActionBar" >
+
+            <!--
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            -->
+        </activity>
+        <activity
+            android:name=".content.art.detail.ContentDetailActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity android:name=".content.art.detail.ExpandImageActivity" />
+        <activity android:name=".blog.simpleList.SimpleTabUserListActivity" />
+        <activity android:name=".blog.simpleList.SimpleSingleUserListActivity" />
+        <activity android:name=".user.UserInfoActivity" />
+        <activity android:name=".blog.BlogInCultureActivity" />
+        <activity android:name=".culture.CultureDetailActivity" />
+        <activity android:name=".create.CreateInputCultureActivity"
+            android:windowSoftInputMode="stateHidden|adjustPan">
+            </activity>
+        <activity android:name=".create.CreateInputCultureTag" />
+        <activity android:name=".comment.CommentActivity" />
+        <activity android:name=".MapActivity" />
+        <activity
+            android:name=".create.selectMedia.MediaSingleChoiceActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".create.selectMedia.MediaMultiChoiceActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".create.selectMedia.CreateImageContentActivity"
+            android:parentActivityName=".create.selectMedia.MediaMultiChoiceActivity"
+            android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
+        <activity
+            android:name=".search.SearchActivity"
+            android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
+        <activity
+            android:name=".create.selectMedia.MusicChoiceActivity"
+            android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
+        <activity
+            android:name=".create.selectMedia.CreateMusicContentActivity"
+            android:parentActivityName=".create.selectMedia.MusicChoiceActivity"
+            android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
+        <activity android:name=".youtube.uploadManager.YoutubeUploadActivity" >
+        </activity>
+        <activity android:name=".youtube.uploadManager.ReviewActivity" />
+
+        <service
+            android:name=".youtube.uploadManager.UploadService"
+            android:exported="true" />
+
+        <activity android:name=".menu.MenuActivity" >
+        </activity>
+        <activity android:name=".youtube.uploadManager.PlayActivity" />
+        <activity
+            android:name=".create.CreateActivity"
+            android:theme="@style/AppTheme.IndeepenCreate" >
+        </activity>
+
+        <receiver
+            android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+
+                <category android:name="com.release.indeepen" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".login.service.MyGcmListenerService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".login.service.MyInstanceIDListenerService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".login.service.RegistrationIntentService"
+            android:exported="false" >
+        </service>
+
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <provider
+            android:name="com.facebook.FacebookContentProvider"
+            android:authorities="com.facebook.app.FacebookContentProvider1234"
+            android:exported="true" />
+
+        <activity
+            android:name=".login.SplashActivity"
+            android:theme="@style/AppTheme.FullScreen" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".login.LoginActivity"
+            android:theme="@style/AppTheme.FullScreen" >
+        </activity>
+        <activity android:name=".blog.UserProfileActivity"
+            android:windowSoftInputMode="stateHidden|adjustPan">
+        </activity>
+    </application>
+
+</manifest>
