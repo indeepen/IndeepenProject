@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <permission
         android:name="com.release.indeepen.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
@@ -50,10 +50,10 @@
         <activity android:name=".user.UserInfoActivity" />
         <activity android:name=".blog.BlogInCultureActivity" />
         <activity android:name=".culture.CultureDetailActivity" />
-        <activity android:name=".create.CreateInputCultureActivity"
+        <activity android:name=".create.selectMedia.CreateInputCultureActivity"
             android:windowSoftInputMode="stateHidden|adjustPan">
             </activity>
-        <activity android:name=".create.CreateInputCultureTag" />
+        <activity android:name=".create.selectMedia.CreateInputCultureTag" />
         <activity android:name=".comment.CommentActivity" />
         <activity android:name=".MapActivity" />
         <activity
@@ -143,7 +143,7 @@
 
         <activity
             android:name=".login.SplashActivity"
-            android:theme="@style/AppTheme.FullScreen" >
+            android:theme="@style/AppTheme.IndeepenCreate" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -152,11 +152,16 @@
         </activity>
         <activity
             android:name=".login.LoginActivity"
-            android:theme="@style/AppTheme.FullScreen" >
+            android:theme="@style/AppTheme.IndeepenCreate" >
         </activity>
         <activity android:name=".blog.UserProfileActivity"
             android:windowSoftInputMode="stateHidden|adjustPan">
         </activity>
+        <activity android:name=".create.selectMedia.CreateYoutubeContentActivity"
+            android:windowSoftInputMode="stateHidden|adjustPan"
+            android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
+
     </application>
 
 </manifest>
