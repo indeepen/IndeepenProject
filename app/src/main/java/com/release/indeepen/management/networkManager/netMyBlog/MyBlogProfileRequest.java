@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.release.indeepen.DefineNetwork;
 import com.release.indeepen.management.networkManager.NetworkRequest;
-import com.release.indeepen.management.networkManager.netMyBlog.data.BlogInfoResult;
 import com.release.indeepen.management.networkManager.netMyBlog.data.UserProfileResult;
 
 import java.io.IOException;

@@ -12,7 +12,6 @@ import com.release.indeepen.management.networkManager.netArt.data.ContentResultL
 import com.release.indeepen.management.networkManager.netArt.data.Postinfo;
 import com.release.indeepen.management.networkManager.netArt.data.Resources;
 import com.release.indeepen.management.networkManager.netArt.data.Result;
-import com.release.indeepen.management.networkManager.netCulture.data.BlogInCultureResultList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +81,8 @@ public class CultureController {
             if (null != mPostinfo.arrResources) {
                 for (Resources resources : mPostinfo.arrResources) {
                     if (resources.sFileType.contains("image")) {
-                        mData.arrIMGs.add(Uri.parse(resources.sPath).toString());
+                        mData.arrIMGs.add(resources.sPath);
+                        mData.arrThumbs.add(resources.sThumb);
                     }
                 }
             }

@@ -7,5 +7,5 @@ import com.google.gson.annotations.SerializedName;
  */
 public class ImageResult {
     @SerializedName("result")
-    public ChangeIMGData mChageIMGData;
+    public ChangeIMGData mChangeIMGData;
 }

@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TabHost;
 
 import com.release.indeepen.DefineContentType;
@@ -14,6 +16,9 @@ public class SimpleTabUserListActivity extends AppCompatActivity {
     TabHost tabHost;
     ViewPager pager;
     TabsAdapter mAdapter;
+    View myfan, myartist;
+    ImageView tab_image;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,9 +34,17 @@ public class SimpleTabUserListActivity extends AppCompatActivity {
 
         Bundle artistBundle = getIntent().getExtras();
         artistBundle.putInt(DefineNetwork.USER_LIST_REQUEST, DefineNetwork.USER_LIST_TYPE_MY_ARTIST);
+        myfan = getLayoutInflater().inflate(R.layout.view_image, null);
+        myartist = getLayoutInflater().inflate(R.layout.view_image, null);
 
-        mAdapter.addTab(tabHost.newTabSpec(DefineContentType.SIMPLE_MY_FAN).setIndicator(DefineContentType.SIMPLE_MY_FAN), SimpleUserListFragment.class, fanBundle);
-        mAdapter.addTab(tabHost.newTabSpec(DefineContentType.SIMPLE_MY_ARTIST).setIndicator(DefineContentType.SIMPLE_MY_ARTIST), SimpleUserListFragment.class, artistBundle);
+        tab_image = (ImageView) myfan.findViewById(R.id.tab_image);
+        tab_image.setBackgroundResource(R.drawable.blog_navi_fan);
+        tab_image = (ImageView) myartist.findViewById(R.id.tab_image);
+        tab_image.setBackgroundResource(R.drawable.blog_navi_artist);
+
+
+        mAdapter.addTab(tabHost.newTabSpec(DefineContentType.SIMPLE_MY_FAN).setIndicator(myfan), SimpleUserListFragment.class, fanBundle);
+        mAdapter.addTab(tabHost.newTabSpec(DefineContentType.SIMPLE_MY_ARTIST).setIndicator(myartist), SimpleUserListFragment.class, artistBundle);
 
 
         /*tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {

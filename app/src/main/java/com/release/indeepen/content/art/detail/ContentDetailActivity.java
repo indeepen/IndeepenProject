@@ -38,7 +38,8 @@ public class ContentDetailActivity extends AppCompatActivity {
                vfragment = new ContentDetailMusicFragment();
                 break;
             }
-            case DefineContentType.SINGLE_ART_TYPE_YOUTUBE:{
+            case DefineContentType.SINGLE_ART_TYPE_YOUTUBE:
+            case DefineContentType.SINGLE_ART_TYPE_MUSIC_VIDEO:{
                 vfragment = new ContentDetailYoutubeFragment();
                 break;
             }

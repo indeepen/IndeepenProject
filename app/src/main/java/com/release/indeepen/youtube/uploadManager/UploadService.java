@@ -20,6 +20,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.WindowManager;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -30,6 +31,7 @@ import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.youtube.YouTube;
 import com.google.common.collect.Lists;
 import com.release.indeepen.R;
+import com.release.indeepen.SharedApplication;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -67,13 +69,14 @@ public class UploadService extends IntentService {
     final HttpTransport transport = AndroidHttp.newCompatibleTransport();
     final JsonFactory jsonFactory = new GsonFactory();
     GoogleAccountCredential credential;
+
     /**
      * tracks the number of upload attempts
      */
     private int mUploadAttemptCount;
 
     public UploadService() {
-        super("YTUploadService");
+        super("UploadService");
     }
 
     private static void zzz(int duration) throws InterruptedException {
@@ -116,6 +119,7 @@ public class UploadService extends IntentService {
     }
 
     private void tryUploadAndShowSelectableNotification(final Uri fileUri, final YouTube youtube) throws InterruptedException {
+
         while (true) {
             Log.i(TAG, String.format("Uploading [%s] to YouTube", fileUri.toString()));
             String videoId = tryUpload(fileUri, youtube);
@@ -156,7 +160,7 @@ public class UploadService extends IntentService {
                     return;
                 }
             } else {
-                ResumableUpload.showSelectableNotification(videoId, getApplicationContext());
+                //.showSelectableNotification(videoId, getApplicationContext());
                 return;
             }
         }
@@ -175,7 +179,6 @@ public class UploadService extends IntentService {
             cursor.moveToFirst();
 
             videoId = ResumableUpload.upload(youtube, fileInputStream, fileSize, mFileUri, cursor.getString(column_index), getApplicationContext());
-
 
         } catch (FileNotFoundException e) {
             Log.e(getApplicationContext().toString(), e.getMessage());

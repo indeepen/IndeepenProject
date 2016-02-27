@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+import android.support.v4.app.Fragment;
 
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
@@ -20,7 +22,9 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
+import com.release.indeepen.DefineContentType;
 import com.release.indeepen.R;
+import com.release.indeepen.youtube.MyYoutubeFragment;
 import com.release.indeepen.youtube.util.VideoData;
 
 
@@ -40,11 +44,11 @@ import com.release.indeepen.youtube.util.VideoData;
 
 /**
  * @author Ibrahim Ulukaya <ulukaya@google.com>
- *         <p/>
+ *         <p>
  *         Main fragment showing YouTube Direct Lite upload options and having
  *         YT Android Player.
  */
-public class PlayActivity extends Activity implements
+public class PlayActivity extends AppCompatActivity implements
         PlayerStateChangeListener, OnFullscreenListener {
 
     private static final String YOUTUBE_FRAGMENT_TAG = "youtube";
@@ -75,7 +79,12 @@ public class PlayActivity extends Activity implements
     }
 
     public void panToVideo(final String youtubeId) {
-        popPlayerFromBackStack();
+/*
+        MyYoutubeFragment myYoutubeFragment = new MyYoutubeFragment();
+        myYoutubeFragment.setPath(youtubeId);
+        getSupportFragmentManager().beginTransaction().replace(R.id.detail_container, myYoutubeFragment, YOUTUBE_FRAGMENT_TAG).commit();*/
+
+        // popPlayerFromBackStack();
         YouTubePlayerFragment playerFragment = YouTubePlayerFragment
                 .newInstance();
         getFragmentManager()
@@ -158,7 +167,7 @@ public class PlayActivity extends Activity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       // getActionBar().setDisplayHomeAsUpEnabled(true);
+        // getActionBar().setDisplayHomeAsUpEnabled(true);
         setContentView(R.layout.activity_play);
         intent = getIntent();
         Button submitButton = (Button) findViewById(R.id.submit_button);

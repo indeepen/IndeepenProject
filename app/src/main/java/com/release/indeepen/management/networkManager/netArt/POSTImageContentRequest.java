@@ -11,7 +11,6 @@ import com.release.indeepen.management.networkManager.NetworkRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,9 +25,15 @@ import java.net.URL;
  */
 public class POSTImageContentRequest extends NetworkRequest<String> {
 
-    @Override
+
+    String sURL;
+
     public URL getURL() throws MalformedURLException {
-        return new URL("http://54.64.26.200/workPosts");
+        return new URL(sURL);
+    }
+
+    public void setURL(String url) {
+        sURL = url;
     }
 
     @Override
@@ -49,10 +54,10 @@ public class POSTImageContentRequest extends NetworkRequest<String> {
             for(String path : ((ContentImageData)mData).arrIMGs) {
                 multipart.addFilePart(DefineNetwork.POST_FILE, new File(path));
             }
-            multipart.addFormField(DefineNetwork.POST_IMAGE_BLOG_ID, mData.sBlogKey);
+            multipart.addFormField(DefineNetwork.POST_BLOG_ID, mData.sBlogKey);
             multipart.addFormField(DefineNetwork.POST_IMAGE_ARTTYPE, mData.nArtType+"");
             multipart.addFormField(DefineNetwork.POST_IMAGE_EMOTION, mData.nEmotion+"");
-            multipart.addFormField(DefineNetwork.POST_IMAGE_TEXT, mData.sText);
+            multipart.addFormField(DefineNetwork.POST_TEXT, mData.sText);
             multipart.finish();
         } catch (IOException e) {
             e.printStackTrace();

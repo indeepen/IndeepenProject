@@ -22,25 +22,24 @@ import android.content.IntentSender;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.NetworkImageView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.plus.Plus;
-import com.google.android.gms.plus.PlusOneButton;
-import com.google.android.gms.plus.model.people.Person;
 import com.release.indeepen.R;
 import com.release.indeepen.youtube.util.VideoData;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -57,7 +56,7 @@ public class UploadsListFragment extends Fragment implements ConnectionCallbacks
     private Callbacks mCallbacks;
     private GoogleApiClient mGoogleApiClient;
     private GridView mGridView;
-    private ImageLoader mImageLoader;
+    UploadedVideoAdapter adapter;
 
     public UploadsListFragment() {
     }
@@ -88,42 +87,21 @@ public class UploadsListFragment extends Fragment implements ConnectionCallbacks
         mGridView = (GridView) listView.findViewById(R.id.grid_view);
         TextView emptyView = (TextView) listView.findViewById(android.R.id.empty);
         mGridView.setEmptyView(emptyView);
+        mGridView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         return listView;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setProfileInfo();
     }
 
     public void setVideos(List<VideoData> videos) {
         if (!isAdded()) {
             return;
         }
-
-        mGridView.setAdapter(new UploadedVideoAdapter(videos));
-    }
-
-    public void setProfileInfo() {
-        //not sure if mGoogleapiClient.isConnect is appropriate...
-        if (!mGoogleApiClient.isConnected() || Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) == null) {
-            ((ImageView) getView().findViewById(R.id.avatar))
-                    .setImageDrawable(null);
-            ((TextView) getView().findViewById(R.id.display_name))
-                    .setText(R.string.not_signed_in);
-        } else {
-            Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-            if (currentPerson.hasImage()) {
-                // Set the URL of the image that should be loaded into this view, and
-                // specify the ImageLoader that will be used to make the request.
-                ((NetworkImageView) getView().findViewById(R.id.avatar)).setImageUrl(currentPerson.getImage().getUrl(), mImageLoader);
-            }
-            if (currentPerson.hasDisplayName()) {
-                ((TextView) getView().findViewById(R.id.display_name))
-                        .setText(currentPerson.getDisplayName());
-            }
-        }
+        adapter = new UploadedVideoAdapter(videos);
+        mGridView.setAdapter(adapter);
     }
 
     @Override
@@ -144,7 +122,7 @@ public class UploadsListFragment extends Fragment implements ConnectionCallbacks
             ((UploadedVideoAdapter) mGridView.getAdapter()).notifyDataSetChanged();
         }
 
-        setProfileInfo();
+        //setProfileInfo();
         mCallbacks.onConnected(Plus.AccountApi.getAccountName(mGoogleApiClient));
     }
 
@@ -181,18 +159,16 @@ public class UploadsListFragment extends Fragment implements ConnectionCallbacks
         }
 
         mCallbacks = (Callbacks) activity;
-        mImageLoader = mCallbacks.onGetImageLoader();
+
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         mCallbacks = null;
-        mImageLoader = null;
     }
 
     public interface Callbacks {
-        public ImageLoader onGetImageLoader();
 
         public void onVideoSelected(VideoData video);
 
@@ -225,26 +201,28 @@ public class UploadsListFragment extends Fragment implements ConnectionCallbacks
         public View getView(final int position, View convertView,
                             ViewGroup container) {
             if (convertView == null) {
+               /* convertView = LayoutInflater.from(getActivity()).inflate(
+                        R.layout.list_item, container, false);*/
                 convertView = LayoutInflater.from(getActivity()).inflate(
-                        R.layout.list_item, container, false);
+                        R.layout.view_youtube_checked_item, container, false);
             }
 
             VideoData video = mVideos.get(position);
-            ((TextView) convertView.findViewById(android.R.id.text1))
+            ((TextView) convertView.findViewById(R.id.text_title))
                     .setText(video.getTitle());
-            ((NetworkImageView) convertView.findViewById(R.id.thumbnail)).setImageUrl(video.getThumbUri(), mImageLoader);
-            if (mGoogleApiClient.isConnected()) {
-                ((PlusOneButton) convertView.findViewById(R.id.plus_button))
-                        .initialize(video.getWatchUri(), null);
-            }
-            convertView.findViewById(R.id.main_target).setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            mCallbacks.onVideoSelected(mVideos.get(position));
-                        }
-                    });
+            String uri = video.getThumbUri();
+            Picasso.with(getActivity()).load(video.getThumbUri()).placeholder(R.drawable.ic_empty).error(R.drawable.ic_error).resize(getActivity().getResources().getDisplayMetrics().widthPixels, 0).into((ImageView) convertView.findViewById(R.id.image_icon));
+
             return convertView;
         }
     }
+
+
+    public String getSelectedItme(){
+        if(-1 == mGridView.getCheckedItemPosition()){
+            return "";
+        }
+        return ((VideoData)adapter.getItem(mGridView.getCheckedItemPosition())).getYouTubeId();
+    }
+
 }

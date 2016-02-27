@@ -14,6 +14,9 @@ public class SimpleImageAdapter extends BaseAdapter {
 
     List<String> items = new ArrayList<String>();
 
+    public void clear() {
+        items.clear();
+    }
 
     public void add(String data) {
         items.add(data);

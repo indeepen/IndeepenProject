@@ -1,6 +1,7 @@
 package com.release.indeepen.login;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -24,10 +25,16 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.release.indeepen.DefineNetwork;
 import com.release.indeepen.MainActivity;
 import com.release.indeepen.R;
 import com.release.indeepen.login.service.RegistrationIntentService;
 import com.release.indeepen.management.networkManager.NetworkManager;
+import com.release.indeepen.management.networkManager.NetworkProcess;
+import com.release.indeepen.management.networkManager.NetworkRequest;
+import com.release.indeepen.management.networkManager.netLogin.LoginController;
+import com.release.indeepen.management.networkManager.netLogin.POSTLoginRequest;
+import com.release.indeepen.management.networkManager.netLogin.data.IndeepenLoginResult;
 
 /*import com.release.indeepen.login.service.RegistrationIntentService;*/
 
@@ -48,10 +55,56 @@ public class SplashActivity extends AppCompatActivity {
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                doRealStart();
+                //doRealStart();
             }
         };
-        setUpIfNeeded();
+       // setUpIfNeeded();
+        if(!TextUtils.isEmpty(PropertyManager.getInstance().getId()) && !TextUtils.isEmpty(PropertyManager.getInstance().getPassword())){
+            final String id =PropertyManager.getInstance().getId();
+            final String password = PropertyManager.getInstance().getPassword();
+
+
+                POSTLoginRequest request = new POSTLoginRequest();
+                request.setURL(DefineNetwork.LOGIN);
+                request.setData(id, password);
+
+                LoginController.getInstance().login(request, new NetworkProcess.OnResultListener<IndeepenLoginResult>() {
+                    @Override
+                    public void onSuccess(NetworkRequest<IndeepenLoginResult> request, IndeepenLoginResult result) {
+                        Toast.makeText(SplashActivity.this, "로그인 되었습니다.", Toast.LENGTH_SHORT).show();
+
+                        PropertyManager.getInstance().setId(id);
+                        PropertyManager.getInstance().setPassword(password);
+
+                        PropertyManager.getInstance().mUser.sUserkey = result.result.userKey;
+                        PropertyManager.getInstance().mUser.sBlogKey = result.result.artistBlogKey;
+                        PropertyManager.getInstance().mUser.sActiveBlogKey = result.result.activityBlogKey;
+                        PropertyManager.getInstance().mUser.arrSpaceKeys = result.result.arrSpaceBlogKeys;
+                        startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                        finish();
+                    }
+
+                    @Override
+                    public void onFail(NetworkRequest<IndeepenLoginResult> request, int code) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(SplashActivity.this);
+                        //builder.setIcon(android.R.drawable.ic_dialog_alert);
+                        //builder.setTitle("Alert Dialog");
+                        builder.setMessage("로그인 정보를 다시 확인해 주세요");
+
+                        builder.setNeutralButton("확인", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(SplashActivity.this, "확인", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        builder.setCancelable(false);
+                        builder.create().show();
+                    }
+                });
+
+        }else{
+            goLoginActivity();
+        }
     }
 
     @Override

@@ -28,6 +28,7 @@ public class MenuActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_back);
 
         mListF = new MenuListFragment();
         add_art_space = (RelativeLayout)findViewById(R.id.add_art_space);

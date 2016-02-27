@@ -3,6 +3,7 @@ package com.release.indeepen.youtube.uploadManager;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -46,7 +47,11 @@ import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoListResponse;
 import com.google.api.services.youtube.model.VideoSnippet;
+import com.release.indeepen.DefineContentType;
 import com.release.indeepen.R;
+import com.release.indeepen.content.art.ContentYoutubeData;
+import com.release.indeepen.create.selectMedia.CreateYoutubeContentActivity;
+import com.release.indeepen.login.PropertyManager;
 import com.release.indeepen.youtube.util.NetworkSingleton;
 import com.release.indeepen.youtube.util.Utils;
 import com.release.indeepen.youtube.util.VideoData;
@@ -78,46 +83,42 @@ public class YoutubeUploadActivity extends AppCompatActivity implements
     final HttpTransport transport = AndroidHttp.newCompatibleTransport();
     final JsonFactory jsonFactory = new GsonFactory();
     GoogleAccountCredential credential;
-    private ImageLoader mImageLoader;
+    //private ImageLoader mImageLoader;
     private String mChosenAccountName;
     private Uri mFileURI = null;
     private VideoData mVideoData;
     private UploadBroadcastReceiver broadcastReceiver;
     private UploadsListFragment mUploadsListFragment;
+    public static YoutubeUploadActivity youtubeUploadActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().requestFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
-
+        youtubeUploadActivity = this;
         mUploadsListFragment = new UploadsListFragment(getApplicationContext());
 
         // Check to see if the proper keys and playlist IDs have been set up
-        if (!isCorrectlyConfigured()) {
-            setContentView(R.layout.developer_setup_required);
-            showMissingConfigurations();
+
+        setContentView(R.layout.activity_youtube_upload);
+
+        credential = GoogleAccountCredential.usingOAuth2(
+                getApplicationContext(), Arrays.asList(Auth.SCOPES));
+        // set exponential backoff policy
+        credential.setBackOff(new ExponentialBackOff());
+
+        if (savedInstanceState != null) {
+            mChosenAccountName = savedInstanceState.getString(ACCOUNT_KEY);
         } else {
-            setContentView(R.layout.activity_youtube_upload);
-
-            ensureLoader();
-
-            credential = GoogleAccountCredential.usingOAuth2(
-                    getApplicationContext(), Arrays.asList(Auth.SCOPES));
-            // set exponential backoff policy
-            credential.setBackOff(new ExponentialBackOff());
-
-            if (savedInstanceState != null) {
-                mChosenAccountName = savedInstanceState.getString(ACCOUNT_KEY);
-            } else {
-                loadAccount();
-            }
-
-            credential.setSelectedAccountName(mChosenAccountName);
-
-            mUploadsListFragment = (UploadsListFragment) getFragmentManager()
-                    .findFragmentById(R.id.list_fragment);
-
+            loadAccount();
         }
+
+        credential.setSelectedAccountName(mChosenAccountName);
+
+        mUploadsListFragment = (UploadsListFragment) getFragmentManager()
+                .findFragmentById(R.id.list_fragment);
+
+
     }
 
     /**
@@ -132,26 +133,13 @@ public class YoutubeUploadActivity extends AppCompatActivity implements
      * @return true if the application is correctly configured for use, false if
      * not
      */
-    private boolean isCorrectlyConfigured() {
-        // This isn't going to internationalize well, but we only really need
-        // this for the sample app.
-        // Real applications will remove this section of code and ensure that
-        // all of these values are configured.
-        if (Auth.KEY.startsWith("Replace")) {
-            return false;
-        }
-        if (Constants.UPLOAD_PLAYLIST.startsWith("Replace")) {
-            return false;
-        }
-        return true;
-    }
 
     /**
      * This method renders the ListView explaining what the configurations the
      * developer of this application has to complete. Typically, these are
      * static variables defined in {@link Auth} and {@link Constants}.
      */
-    private void showMissingConfigurations() {
+/*    private void showMissingConfigurations() {
         List<MissingConfig> missingConfigs = new ArrayList<MissingConfig>();
 
         // Make sure an API key is registered
@@ -200,8 +188,7 @@ public class YoutubeUploadActivity extends AppCompatActivity implements
         // Wire the data adapter up to the view
         ListView missingConfigList = (ListView) findViewById(R.id.missing_config_list);
         missingConfigList.setAdapter(adapter);
-    }
-
+    }*/
     @Override
     protected void onResume() {
         super.onResume();
@@ -213,27 +200,24 @@ public class YoutubeUploadActivity extends AppCompatActivity implements
                 broadcastReceiver, intentFilter);
     }
 
-    private void ensureLoader() {
-        if (mImageLoader == null) {
-            // Get the ImageLoader through your singleton class.
-            mImageLoader = NetworkSingleton.getInstance(this).getImageLoader();
-        }
-    }
 
     private void loadAccount() {
-        SharedPreferences sp = PreferenceManager
+        mChosenAccountName = PropertyManager.getInstance().getChosenAccountName();
+       /* SharedPreferences sp = PreferenceManager
                 .getDefaultSharedPreferences(this);
-        mChosenAccountName = sp.getString(ACCOUNT_KEY, null);
+        mChosenAccountName = sp.getString(ACCOUNT_KEY, null);*/
         invalidateOptionsMenu();
     }
 
     private void saveAccount() {
-        SharedPreferences sp = PreferenceManager
+
+        PropertyManager.getInstance().setChosenAccountName(mChosenAccountName);
+        /*SharedPreferences sp = PreferenceManager
                 .getDefaultSharedPreferences(this);
-        sp.edit().putString(ACCOUNT_KEY, mChosenAccountName).commit();
+        sp.edit().putString(ACCOUNT_KEY, mChosenAccountName).commit();*/
     }
 
-    private void loadData() {
+    public void loadData() {
         if (mChosenAccountName == null) {
             return;
         }
@@ -375,6 +359,10 @@ public class YoutubeUploadActivity extends AppCompatActivity implements
     }
 
     private void loadUploadedVideos() {
+        final ProgressDialog dialog = new ProgressDialog(YoutubeUploadActivity.this);
+        dialog.setIcon(android.R.drawable.ic_dialog_info);
+        dialog.setMessage("Loading...");
+        dialog.show();
         if (mChosenAccountName == null) {
             return;
         }
@@ -384,9 +372,7 @@ public class YoutubeUploadActivity extends AppCompatActivity implements
             @Override
             protected List<VideoData> doInBackground(Void... voids) {
 
-                YouTube youtube = new YouTube.Builder(transport, jsonFactory,
-                        credential).setApplicationName(Constants.APP_NAME)
-                        .build();
+
 
                 try {
                     /*
@@ -399,7 +385,9 @@ public class YoutubeUploadActivity extends AppCompatActivity implements
 					 */
                    /* PlaylistListResponse plr = youtube.playlists().list("snippet ").setMine(true).execute();
                     String id = plr.getItems().get(0).getId();*/
-
+                    YouTube youtube = new YouTube.Builder(transport, jsonFactory,
+                            credential).setApplicationName(Constants.APP_NAME)
+                            .build();
 
                     ChannelListResponse clr = youtube.channels()
                             .list("contentDetails").setMine(true).execute();
@@ -447,11 +435,12 @@ public class YoutubeUploadActivity extends AppCompatActivity implements
                         @Override
                         public int compare(VideoData videoData,
                                            VideoData videoData2) {
+                            dialog.dismiss();
                             return videoData.getTitle().compareTo(
                                     videoData2.getTitle());
                         }
                     });
-
+                    dialog.dismiss();
                     return videos;
 
                 } catch (final GooglePlayServicesAvailabilityIOException availabilityException) {
@@ -489,11 +478,11 @@ public class YoutubeUploadActivity extends AppCompatActivity implements
         finish();
     }
 
-    @Override
+   /* @Override
     public ImageLoader onGetImageLoader() {
         ensureLoader();
         return mImageLoader;
-    }
+    }*/
 
     @Override
     public void onVideoSelected(VideoData video) {
@@ -516,19 +505,19 @@ public class YoutubeUploadActivity extends AppCompatActivity implements
     }
 
     public void recordVideo(View view) {
-        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        ContentYoutubeData mData = new ContentYoutubeData();
+        mData.sYouTubePath = mUploadsListFragment.getSelectedItme();
 
-        // Workaround for Nexus 7 Android 4.3 Intent Returning Null problem
-        // create a file to save the video in specific folder (this works for
-        // video only)
-        // mFileURI = getOutputMediaFile(MEDIA_TYPE_VIDEO);
-        // intent.putExtra(MediaStore.EXTRA_OUTPUT, mFileURI);
+        if(TextUtils.isEmpty(mData.sYouTubePath)){
+            Toast.makeText(this, "컨텐츠를 선택하세요", Toast.LENGTH_SHORT).show();
+        }else{
 
-        // set the video image quality to high
-        intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
+            Intent mIntent = new Intent(this, CreateYoutubeContentActivity.class);
+            mIntent.putExtra(DefineContentType.BUNDLE_DATA_TYPE, getIntent().getIntExtra(DefineContentType.BUNDLE_DATA_TYPE, -1));
+            mIntent.putExtra(DefineContentType.BUNDLE_DATA_REQUEST, mData);
 
-        // start the Video Capture Intent
-        startActivityForResult(intent, RESULT_VIDEO_CAP);
+            startActivity(mIntent);
+        }
     }
 
     public void showGooglePlayServicesAvailabilityErrorDialog(

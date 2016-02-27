@@ -6,7 +6,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.release.indeepen.R;
 import com.release.indeepen.user.UserData;
 import com.squareup.picasso.Picasso;

@@ -1,18 +1,17 @@
 package com.release.indeepen.management.networkManager.netMyBlog;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.text.TextUtils;
 
-import com.google.common.io.ByteStreams;
 import com.release.indeepen.DefineContentType;
 import com.release.indeepen.content.ContentData;
+import com.release.indeepen.content.art.ContentYoutubeData;
 import com.release.indeepen.management.networkManager.NetworkManager;
 import com.release.indeepen.management.networkManager.NetworkProcess;
 import com.release.indeepen.management.networkManager.NetworkRequest;
 import com.release.indeepen.management.networkManager.netArt.data.Resources;
 import com.release.indeepen.management.networkManager.netMyBlog.data.BlogContent;
 import com.release.indeepen.management.networkManager.netMyBlog.data.BlogContentList;
+import com.release.indeepen.management.networkManager.netMyBlog.data.BlogInfoListResult;
 import com.release.indeepen.management.networkManager.netMyBlog.data.BlogInfoResult;
 import com.release.indeepen.management.networkManager.netMyBlog.data.ImageResult;
 import com.release.indeepen.management.networkManager.netMyBlog.data.UserProfileResult;
@@ -20,10 +19,6 @@ import com.release.indeepen.management.networkManager.netMyBlog.data.WriteResult
 import com.release.indeepen.management.networkManager.netMyBlog.data.WriterResultList;
 import com.release.indeepen.user.UserData;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -76,6 +71,22 @@ public class MyBlogController {
         mExecutor.execute(new NetworkProcess<ImageResult>(request, listener));
     }
 
+    public void putFan(NetworkRequest<String> request, NetworkProcess.OnResultListener<String> listener) {
+        mExecutor.execute(new NetworkProcess<String>(request, listener));
+    }
+
+    public void postIMissYou(NetworkRequest<String> request, NetworkProcess.OnResultListener<String> listener) {
+        mExecutor.execute(new NetworkProcess<String>(request, listener));
+    }
+
+    public void getMyBlogInfoList(NetworkRequest<BlogInfoListResult> request, NetworkProcess.OnResultListener<BlogInfoListResult> listener) {
+        mExecutor.execute(new NetworkProcess<BlogInfoListResult>(request, listener));
+    }
+
+    public void putChangeBlog(NetworkRequest<String> request, NetworkProcess.OnResultListener<String> listener) {
+        mExecutor.execute(new NetworkProcess<String>(request, listener));
+    }
+
 
     public List<UserData> getUserList(WriterResultList arrResult) {
         List<UserData> list = new ArrayList<UserData>();
@@ -109,23 +120,33 @@ public class MyBlogController {
     }
 
     public ContentData getContent(BlogContent contens) {
-        if (null == contens || null == contens.mWork || null == contens.arrResources)
+        if (null == contens || null == contens.mWork)
             return null;
+        ContentData mData = null;
 
-        ContentData mData = new ContentData();
 
 
-        for (Resources resources : contens.arrResources) {
-            if (resources.sFileType.contains("image") && !TextUtils.isEmpty(resources.sPath)) {
-               // mData.thIMG = Uri.parse(resources.sPath).toString();
-                mData.thIMG = resources.sPath;
+        if(null != contens.arrResources) {
+            mData = new ContentData();
+            for (Resources resources : contens.arrResources) {
+                if (resources.sFileType.contains("image") && !TextUtils.isEmpty(resources.sThumb)) {
+                    // mData.thIMG = Uri.parse(resources.sPath).toString();
+                    mData.sThumb = resources.sThumb;
+                }
             }
         }
 
-        mData.nArtType = contens.mWork.nArtType;
 
-        mData.sContentKey = contens.sContentKey;
 
+        if(DefineContentType.SINGLE_ART_TYPE_YOUTUBE == contens.mWork.nArtType || DefineContentType.SINGLE_ART_TYPE_MUSIC_VIDEO == contens.mWork.nArtType){
+             mData = new ContentYoutubeData();
+            ((ContentYoutubeData)mData).sYouTubePath = contens.sYouTubePath;
+        }
+
+        if(null != mData) {
+            mData.nArtType = contens.mWork.nArtType;
+            mData.sContentKey = contens.sContentKey;
+        }
         return mData;
     }
 

@@ -25,6 +25,9 @@ public class Postinfo {
     @SerializedName("resources")
     public List<Resources> arrResources;
 
+    @SerializedName("youTube")
+    public String sYouTubePath;
+
     @SerializedName("work")
     public Work mWork;
 

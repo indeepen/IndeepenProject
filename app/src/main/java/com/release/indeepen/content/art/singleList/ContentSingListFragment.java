@@ -69,7 +69,7 @@ public class ContentSingListFragment extends Fragment {
                     ((ContentImageData) mData).arrIMGs = new ArrayList<String>();
                     for (Resources resources : contens.mPostinfo.arrResources) {
                         if (resources.sFileType.contains("image")) {
-                            ((ContentImageData) mData).arrIMGs.add(Uri.parse(resources.sPath).toString());
+                            ((ContentImageData) mData).arrIMGs.add(Uri.parse(resources.sThumb).toString());
                         }
                     }
                     break;

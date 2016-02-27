@@ -110,7 +110,8 @@ public class CreateActivity extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(CreateActivity.this, CreateInputCultureActivity.class);
+                Intent intent = new Intent(CreateActivity.this, MediaMultiChoiceActivity.class);
+                intent.putExtra(DefineContentType.BUNDLE_DATA_TYPE, DefineContentType.SINGLE_ART_TYPE_CULTURE);
                 startActivity(intent);
             }
         });

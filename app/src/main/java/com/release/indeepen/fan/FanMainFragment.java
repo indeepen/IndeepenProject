@@ -1,10 +1,12 @@
 package com.release.indeepen.fan;
 
 
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Parcelable;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -13,13 +15,18 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.release.indeepen.DefineContentType;
 import com.release.indeepen.DefineNetwork;
 import com.release.indeepen.R;
 import com.release.indeepen.content.ContentData;
+import com.release.indeepen.content.OptionView;
+import com.release.indeepen.content.art.ContentYoutubeData;
 import com.release.indeepen.content.art.singleList.ContentSingleListAdapter;
+import com.release.indeepen.content.art.singleList.SingleImageView;
+import com.release.indeepen.content.art.singleList.SingleMusicView;
+import com.release.indeepen.content.art.singleList.SingleYoutubeView;
+import com.release.indeepen.culture.CultureItemView;
 import com.release.indeepen.management.musicManager.MusicManager;
 import com.release.indeepen.management.networkManager.NetworkProcess;
 import com.release.indeepen.management.networkManager.NetworkRequest;
@@ -37,15 +44,17 @@ public class FanMainFragment extends Fragment {
     ListView vList;
     ContentSingleListAdapter mAdapter;
     FanHeaderView vHeader;
-    PopupEmotion emotion;
-    PopupCategory category;
+    public PopupEmotion emotion;
+    public PopupCategory category;
     boolean isLastItem;
     boolean isStart;
-    int nEmotion;
-    int nCategory;
-    Button vBtnEmo, vBtnCategory;
+    public int nEmotion;
+    public int nCategory;
+    public Button vBtnEmo, vBtnCategory;
     int nSaveIdx = -1;
     int nSaveTop = 0;
+    int postion;
+    ProgressDialog dialog;
 
     public FanMainFragment() {
         // Required empty public constructor
@@ -54,6 +63,7 @@ public class FanMainFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
    /* @Override
@@ -71,13 +81,12 @@ public class FanMainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_fan_main, container, false);
-
         vList = (ListView) view.findViewById(R.id.list_fan);
         vHeader = new FanHeaderView(getContext());
         vList.getHeaderViewsCount();
         vList.addHeaderView(vHeader);
         vList.setHeaderDividersEnabled(false);
-
+        postion = 0;
         //참고
         vBtnEmo = (Button) vHeader.findViewById(R.id.btn_fan_emotion);
         vBtnEmo.setOnClickListener(new View.OnClickListener() {
@@ -118,29 +127,17 @@ public class FanMainFragment extends Fragment {
                 } else {
                     isLastItem = false;
                 }
-                   /* if (view.getId() == vList.getId()) {
-                        final int currentFirstVisibleItem = vList.getFirstVisiblePosition();
-
-                        if (currentFirstVisibleItem > mLastFirstVisibleItem) {
-                            // getSherlockActivity().getSupportActionBar().hide();
-
-                            ((MainActivity) getActivity()).getSupportActionBar().hide();
-                        } else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
-                            // getSherlockActivity().getSupportActionBar().show();
-                            ((MainActivity) getActivity()).getSupportActionBar().show();
-                        }
-
-                        mLastFirstVisibleItem = currentFirstVisibleItem;
-                    }*/
             }
         });
 
 
         if (nSaveIdx != -1) {
+
             vList.setAdapter(mAdapter);
             vList.setSelectionFromTop(nSaveIdx, nSaveTop);
-        }else{
+        } else {
             mAdapter = new ContentSingleListAdapter();
+            mAdapter.setFragment(this);
             vList.setAdapter(mAdapter);
 
             init();
@@ -179,6 +176,7 @@ public class FanMainFragment extends Fragment {
     }
 
     private void getMoreItem() {
+
         ArtListRequest request = new ArtListRequest();
         if (DefineContentType.FROM_FAN == getArguments().getInt(DefineContentType.KEY_ON_NEW_FROM)) {
             if (isStart) {
@@ -187,7 +185,7 @@ public class FanMainFragment extends Fragment {
             } else {
                 request.setURL(String.format(DefineNetwork.FNA_LIST_FILTER_MORE, nEmotion < 0 || nCategory == DefineContentType.SINGLE_ART_TYPE_CULTURE ? "" : nEmotion + "", nCategory < 0 ? "" : nCategory + ""));
             }
-        }else{
+        } else {
             if (isStart) {
                 request.setURL(getArguments().getString(DefineNetwork.REQUEST_URL));
 
@@ -201,19 +199,50 @@ public class FanMainFragment extends Fragment {
         ArtController.getInstance().getArtList(request, new NetworkProcess.OnResultListener<ContentResultList>() {
             @Override
             public void onSuccess(NetworkRequest<ContentResultList> request, ContentResultList result) {
+                postion = getArguments().getInt(DefineNetwork.LIST_POSITION, 0);
+
+                if (-1 == nSaveIdx && 0 != postion) {
+                    dialog = new ProgressDialog(getContext());
+                    dialog.setIcon(android.R.drawable.ic_dialog_info);
+                    dialog.setMessage("...Loading");
+                    dialog.show();
+                }
                 if (isStart) {
+
                     if (0 < mAdapter.getCount()) {
                         mAdapter.clear();
                     }
                 }
+
                 List<ContentData> list = ArtController.getInstance().getContentList(result);
                 mAdapter.addList(list);
-                if(isStart) {
-                    int postion = getArguments().getInt(DefineNetwork.LIST_POSITION, 0);
-                    vList.setSelection(postion);
+
+                if (isStart) {
+
+                    if (-1 != nSaveIdx) {
+                        vList.setSelectionFromTop(nSaveIdx, nSaveTop);
+
+                    } else if (0 != postion) {
+
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (0 == vList.getHeaderViewsCount()) {
+                                    vList.setSelection(postion);
+                                } else {
+                                    vList.setSelection(postion + 1);
+                                }
+                                if (null != dialog) {
+                                    dialog.dismiss();
+                                    dialog = null;
+                                }
+                            }
+                        }, 500);
+
+                    }
                     isStart = false;
                 }
-             
+
             }
 
             @Override
@@ -380,7 +409,67 @@ public class FanMainFragment extends Fragment {
 
     @Override
     public void onResume() {
-
         super.onResume();
+        if (!isStart) {
+            isStart = true;
+            getMoreItem();
+
+        }
+        mAdapter.notifyDataSetChanged();
     }
+
+    public void setChageData(int type, int positon, ContentData data) {
+        switch (type) {
+            case DefineContentType.DELETE: {
+                mAdapter.removeData(positon);
+                break;
+            }
+            case DefineContentType.LIKE:
+            case DefineContentType.COMMENT: {
+                mAdapter.changeData(positon, data);
+            }
+        }
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void startActivityForResult(Intent intent, int requestCode) {
+        super.startActivityForResult(intent, requestCode);
+    }
+
+    public void setPosition() {
+        if (-1 != nSaveIdx) {
+            vList.setSelectionFromTop(nSaveIdx, nSaveTop);
+        } else if (0 != postion) {
+            vList.setSelection(postion);
+        }
+    }
+    public View getViewByPosition(int pos, ListView listView) {
+        final int firstListItemPosition = listView.getFirstVisiblePosition();
+        final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
+
+        if (pos < firstListItemPosition || pos > lastListItemPosition) {
+            return listView.getAdapter().getView(pos, null, listView);
+        } else {
+            final int childIndex = pos - firstListItemPosition;
+            return listView.getChildAt(childIndex);
+        }
+    }
+
+    public boolean closeOptionsPop() {
+        boolean result = false;
+        View view = getViewByPosition(vList.getFirstVisiblePosition(), vList);
+        if(view instanceof SingleMusicView || view instanceof SingleImageView || view instanceof SingleYoutubeView || view instanceof CultureItemView){
+            result = ((OptionView)view).closePopup();
+        }
+
+        view = getViewByPosition(vList.getFirstVisiblePosition()+1, vList);
+        if(view instanceof SingleMusicView || view instanceof SingleImageView || view instanceof SingleYoutubeView || view instanceof CultureItemView){
+            if(((OptionView)view).closePopup() && !result){
+                result = true;
+            }
+        }
+        return result;
+    }
+
 }

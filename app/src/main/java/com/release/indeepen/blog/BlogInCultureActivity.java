@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TabHost;
 
 import com.release.indeepen.DefineContentType;
@@ -19,6 +21,8 @@ public class BlogInCultureActivity extends AppCompatActivity {
     TabHost tabHost;
     ViewPager pager;
     TabsAdapter mAdapter;
+    View myculture, likeculture;
+    ImageView tab_image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +46,17 @@ public class BlogInCultureActivity extends AppCompatActivity {
         bMyFavoriteCulture.putString(DefineNetwork.REQUEST_URL_MORE, String.format(DefineNetwork.MY_FAVORITE_CULTURE_LIT_MORE, intent.getStringExtra(DefineNetwork.BLOG_KEY)));
         bMyCulture.putInt(DefineNetwork.REQUEST_TYPE, DefineNetwork.MY_FAVORITE_CULTURE);
 
+        myculture = getLayoutInflater().inflate(R.layout.view_image, null);
+        likeculture = getLayoutInflater().inflate(R.layout.view_image, null);
 
-        mAdapter.addTab(tabHost.newTabSpec(DefineContentType.BLOG_MY_CULTURE).setIndicator(DefineContentType.BLOG_MY_CULTURE), CultureListFragment.class, bMyCulture);
-        mAdapter.addTab(tabHost.newTabSpec(DefineContentType.BLOG_LIKE_CULTURE).setIndicator(DefineContentType.BLOG_LIKE_CULTURE), CultureListFragment.class, bMyFavoriteCulture);
+        tab_image = (ImageView) myculture.findViewById(R.id.tab_image);
+        tab_image.setBackgroundResource(R.drawable.blog_navi_my);
+        tab_image = (ImageView) likeculture.findViewById(R.id.tab_image);
+        tab_image.setBackgroundResource(R.drawable.blog_navi_like);
+
+
+        mAdapter.addTab(tabHost.newTabSpec(DefineContentType.BLOG_MY_CULTURE).setIndicator(myculture), CultureListFragment.class, bMyCulture);
+        mAdapter.addTab(tabHost.newTabSpec(DefineContentType.BLOG_LIKE_CULTURE).setIndicator(likeculture), CultureListFragment.class, bMyFavoriteCulture);
 
         if (savedInstanceState != null) {
             tabHost.setCurrentTab(savedInstanceState.getInt("tabIndex"));

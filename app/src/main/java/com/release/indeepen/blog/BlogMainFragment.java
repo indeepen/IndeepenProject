@@ -4,20 +4,22 @@ package com.release.indeepen.blog;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.release.indeepen.DefineContentType;
 import com.release.indeepen.DefineNetwork;
 import com.release.indeepen.MainActivity;
@@ -28,7 +30,6 @@ import com.release.indeepen.blog.tripleGrid.HeaderGridView;
 import com.release.indeepen.blog.tripleGrid.TripleGridAdapter;
 import com.release.indeepen.content.ContentData;
 import com.release.indeepen.content.art.detail.ExpandImageActivity;
-import com.release.indeepen.content.art.singleList.ContentSingleListAdapter;
 import com.release.indeepen.create.selectMedia.MediaSingleChoiceActivity;
 import com.release.indeepen.login.PropertyManager;
 import com.release.indeepen.management.networkManager.NetworkProcess;
@@ -36,6 +37,8 @@ import com.release.indeepen.management.networkManager.NetworkRequest;
 import com.release.indeepen.management.networkManager.netMyBlog.MyBlogContentRequest;
 import com.release.indeepen.management.networkManager.netMyBlog.MyBlogController;
 import com.release.indeepen.management.networkManager.netMyBlog.MyBlogInfoRequest;
+import com.release.indeepen.management.networkManager.netMyBlog.POSTIMissyouRequest;
+import com.release.indeepen.management.networkManager.netMyBlog.PUTFanRequest;
 import com.release.indeepen.management.networkManager.netMyBlog.ProfileImageRequest;
 import com.release.indeepen.management.networkManager.netMyBlog.data.BlogContentList;
 import com.release.indeepen.management.networkManager.netMyBlog.data.BlogInfo;
@@ -52,7 +55,7 @@ public class BlogMainFragment extends Fragment implements View.OnClickListener  
     HeaderGridView vTripleGrid;
     TripleGridAdapter mAdapter;
     ImageView vIMGProBack, vthPro;
-    Button vBtnArt, vBtnFavorite, vBtnMyCulture, vBtnCollabo;
+    ImageButton vBtnArt, vBtnFavorite, vBtnMyCulture, vBtnCollabo;
     BlogIntroView vHeader;
     boolean isClick = false;
     String sBlogKey;
@@ -64,6 +67,8 @@ public class BlogMainFragment extends Fragment implements View.OnClickListener  
     int nSaveIdx = -1;
     int nSaveTop = 0;
     boolean isMe = false;
+    public ProfileDialog popup_profile;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -78,10 +83,10 @@ public class BlogMainFragment extends Fragment implements View.OnClickListener  
 
         vIMGProBack = (ImageView) vHeader.findViewById(R.id.img_blog_background);
         vthPro = (ImageView) vHeader.findViewById(R.id.img_blog_thProfile);
-        vBtnArt = (Button) vHeader.findViewById(R.id.btn_tab_art);
-        vBtnFavorite = (Button) vHeader.findViewById(R.id.btn_tab_favorite);
-        vBtnMyCulture = (Button) vHeader.findViewById(R.id.btn_tab_culture);
-        vBtnCollabo = (Button) vHeader.findViewById(R.id.btn_tab_collabo);
+        vBtnArt = (ImageButton) vHeader.findViewById(R.id.btn_tab_art);
+        vBtnFavorite = (ImageButton) vHeader.findViewById(R.id.btn_tab_favorite);
+        vBtnMyCulture = (ImageButton) vHeader.findViewById(R.id.btn_tab_culture);
+        vBtnCollabo = (ImageButton) vHeader.findViewById(R.id.btn_tab_collabo);
         vTextArtist = (TextView) vHeader.findViewById(R.id.text_blog_artist);
         vTextFanCount = (TextView) vHeader.findViewById(R.id.text_fan_count);
         vTextIMissUCount = (TextView) vHeader.findViewById(R.id.text_imissu_count);
@@ -93,10 +98,13 @@ public class BlogMainFragment extends Fragment implements View.OnClickListener  
         vBtnMyCulture.setOnClickListener(this);
         vBtnCollabo.setOnClickListener(this);
 
-        Button btn = (Button) vHeader.findViewById(R.id.btn_fanList);
+        vTextFanCount.setOnClickListener(this);
+        vTextIMissUCount.setOnClickListener(this);
+
+        ImageButton btn = (ImageButton) vHeader.findViewById(R.id.btn_fanList);
         btn.setOnClickListener(this);
 
-        btn = (Button) vHeader.findViewById(R.id.btn_imissyou);
+        btn = (ImageButton) vHeader.findViewById(R.id.btn_imissyou);
         btn.setOnClickListener(this);
 
         vTripleGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -182,7 +190,7 @@ public class BlogMainFragment extends Fragment implements View.OnClickListener  
         Picasso.with(getContext()).load(mBlogData.thProfile).placeholder(R.drawable.ic_empty)
                 .error(R.drawable.ic_error).fit().into(vthPro);
         Picasso.with(getContext()).load(mBlogData.thBackIMG).placeholder(R.drawable.ic_empty)
-                .error(R.drawable.ic_error).fit().into(vIMGProBack);
+                .error(R.drawable.ic_error).fit().centerCrop().into(vIMGProBack);
 
 //        ImageLoader.getInstance().displayImage(mBlogData.thProfile, vthPro);
 //        ImageLoader.getInstance().displayImage(mBlogData.thBackIMG, vIMGProBack);
@@ -211,118 +219,132 @@ public class BlogMainFragment extends Fragment implements View.OnClickListener  
         builder.create().show();
     }
 
-    public void onProfileDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        //builder.setIcon(android.R.drawable.ic_dialog_alert);
-        // builder.setTitle("List Dialog");
-        if(isMe) {
-            builder.setItems(new String[]{"프로필 수정", "프로필 사진 보기", "프로필 사진 등록"}, new DialogInterface.OnClickListener() {
+
+    private void onProfileDialog(final View view) {
+        popup_profile = new ProfileDialog(getContext());
+        popup_profile.setOutsideTouchable(true);
+        popup_profile.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        popup_profile.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+        if (isMe) {
+            popup_profile.btnOther.setVisibility(View.GONE);
+            popup_profile.btnModify.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    final Intent mIntent;
-                    switch (which) {
-                        case 0: {
-                            mIntent = new Intent(getContext(), UserProfileActivity.class);
-                            mIntent.putExtra(DefineNetwork.BLOG_KEY, mBlogData.sBlogKey);
-                            mIntent.putExtra(DefineContentType.IS_ME, true);
-                            startActivity(mIntent);
-                            break;
-                        }
-                        case 1: {
-                            ProfileImageRequest request = new ProfileImageRequest();
-
-                            request.setURL(String.format(DefineNetwork.PROFILE_IMG, sBlogKey));
-
-                            MyBlogController.getInstance().getProfileImage(request, new NetworkProcess.OnResultListener<ImageResult>() {
-                                @Override
-                                public void onSuccess(NetworkRequest<ImageResult> request, ImageResult result) {
-                                    Intent mIntent;
-                                    mIntent = new Intent(getContext(), ExpandImageActivity.class);
-                                    mIntent.putExtra(DefineContentType.EXPAND_IMG, result.mChageIMGData.sChangePath);
-                                    startActivity(mIntent);
-                                }
-
-                                @Override
-                                public void onFail(NetworkRequest<ImageResult> request, int code) {
-
-                                }
-                            });
-
-
-                            break;
-                        }
-                        case 2: {
-                            mIntent = new Intent(getContext(), MediaSingleChoiceActivity.class);
-                            mIntent.putExtra(DefineContentType.BUNDLE_DATA_TYPE, DefineContentType.ACTIVITY_TYPE_PROFILE_IMG);
-                            mIntent.putExtra(DefineNetwork.BLOG_KEY, mBlogData.sBlogKey);
-                            startActivity(mIntent);
-                            break;
-                        }
-                    }
-
+                public void onClick(View v) {
+                    Intent mIntent = new Intent(getContext(), UserProfileActivity.class);
+                    mIntent.putExtra(DefineNetwork.BLOG_KEY, mBlogData.sBlogKey);
+                    mIntent.putExtra(DefineContentType.IS_ME, true);
+                    startActivity(mIntent);
+                    popup_profile.dismiss();
                 }
             });
-        }else{
-            builder.setItems(new String[]{"프로필 보기", "프로필 사진 보기"}, new DialogInterface.OnClickListener() {
+
+
+            popup_profile.btnShow.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    final Intent mIntent;
-                    switch (which) {
-                        case 0: {
-                            mIntent = new Intent(getContext(), UserProfileActivity.class);
-                            mIntent.putExtra(DefineNetwork.BLOG_KEY, mBlogData.sBlogKey);
-                            mIntent.putExtra(DefineContentType.IS_ME, false);
+                public void onClick(View v) {
+                    ProfileImageRequest request = new ProfileImageRequest();
+
+                    request.setURL(String.format(DefineNetwork.PROFILE_IMG, sBlogKey));
+
+                    MyBlogController.getInstance().getProfileImage(request, new NetworkProcess.OnResultListener<ImageResult>() {
+                        @Override
+                        public void onSuccess(NetworkRequest<ImageResult> request, ImageResult result) {
+                            Intent mIntent;
+                            mIntent = new Intent(getContext(), ExpandImageActivity.class);
+                            mIntent.putExtra(DefineContentType.EXPAND_IMG, result.mChangeIMGData.sChangePath);
                             startActivity(mIntent);
-                            break;
-                        }
-                        case 1: {
-                            ProfileImageRequest request = new ProfileImageRequest();
-
-                            request.setURL(String.format(DefineNetwork.PROFILE_IMG, sBlogKey));
-
-                            MyBlogController.getInstance().getProfileImage(request, new NetworkProcess.OnResultListener<ImageResult>() {
-                                @Override
-                                public void onSuccess(NetworkRequest<ImageResult> request, ImageResult result) {
-                                    Intent mIntent;
-                                    mIntent = new Intent(getContext(), ExpandImageActivity.class);
-                                    mIntent.putExtra(DefineContentType.EXPAND_IMG, result.mChageIMGData.sChangePath);
-                                    startActivity(mIntent);
-                                }
-
-                                @Override
-                                public void onFail(NetworkRequest<ImageResult> request, int code) {
-
-                                }
-                            });
-
-                            break;
                         }
 
-                    }
+                        @Override
+                        public void onFail(NetworkRequest<ImageResult> request, int code) {
 
+                        }
+                    });
+                    popup_profile.dismiss();
+                }
+            });
+
+            popup_profile.btnUpload.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent mIntent = new Intent(getContext(), MediaSingleChoiceActivity.class);
+                    mIntent.putExtra(DefineContentType.BUNDLE_DATA_TYPE, DefineContentType.ACTIVITY_TYPE_PROFILE_IMG);
+                    mIntent.putExtra(DefineNetwork.BLOG_KEY, mBlogData.sBlogKey);
+                    startActivity(mIntent);
+                    popup_profile.dismiss();
+                }
+            });
+
+        } else {
+            popup_profile.btnModify.setVisibility(View.GONE);
+            popup_profile.btnUpload.setVisibility(View.GONE);
+
+            popup_profile.btnOther.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent mIntent = new Intent(getContext(), UserProfileActivity.class);
+                    mIntent.putExtra(DefineNetwork.BLOG_KEY, mBlogData.sBlogKey);
+                    mIntent.putExtra(DefineContentType.IS_ME, false);
+                    startActivity(mIntent);
+                    popup_profile.dismiss();
+                }
+            });
+
+            popup_profile.btnShow.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ProfileImageRequest request = new ProfileImageRequest();
+
+                    request.setURL(String.format(DefineNetwork.PROFILE_IMG, sBlogKey));
+
+                    MyBlogController.getInstance().getProfileImage(request, new NetworkProcess.OnResultListener<ImageResult>() {
+                        @Override
+                        public void onSuccess(NetworkRequest<ImageResult> request, ImageResult result) {
+                            Intent mIntent;
+                            mIntent = new Intent(getContext(), ExpandImageActivity.class);
+                            mIntent.putExtra(DefineContentType.EXPAND_IMG, result.mChangeIMGData.sChangePath);
+                            startActivity(mIntent);
+                            popup_profile.dismiss();
+                        }
+
+                        @Override
+                        public void onFail(NetworkRequest<ImageResult> request, int code) {
+
+                        }
+                    });
                 }
             });
         }
-        builder.create().show();
     }
-
     public void onConfirmDialog(View view) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setIcon(android.R.drawable.ic_dialog_alert);
-        builder.setTitle("응원 하시겠습니까?");
-        // builder.setMessage("응원 하시겠습니까?");
-        builder.setPositiveButton("아니", new DialogInterface.OnClickListener() {
+        builder.setTitle("I Miss You 하시겠습니까?");
+        builder.setPositiveButton("아니오", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(getContext(), "안함", Toast.LENGTH_SHORT).show();
 
             }
         });
-        builder.setNeutralButton("응원한다", new DialogInterface.OnClickListener() {
+        builder.setNeutralButton("네", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(getContext(), "사랑한다", Toast.LENGTH_SHORT).show();
+                POSTIMissyouRequest request = new POSTIMissyouRequest();
+                request.setURL(String.format(DefineNetwork.IMISSU, mBlogData.sBlogKey));
+                MyBlogController.getInstance().postIMissYou(request, new NetworkProcess.OnResultListener<String>() {
+                    @Override
+                    public void onSuccess(NetworkRequest<String> request, String result) {
+                        Toast.makeText(getContext(), mBlogData.sArtist+ "님을 보고싶어 합니다.", Toast.LENGTH_SHORT).show();
+                        getBlogInfo();
+                    }
+
+                    @Override
+                    public void onFail(NetworkRequest<String> request, int code) {
+                        Toast.makeText(getContext(), "잠시 후 다시 시도해 주세요. -" + code, Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
         builder.setCancelable(false);
@@ -416,10 +438,10 @@ public class BlogMainFragment extends Fragment implements View.OnClickListener  
 
         switch (v.getId()) {
             case R.id.img_blog_thProfile:
-                onProfileDialog();
+                onProfileDialog(v);
                 break;
             case R.id.img_blog_background:
-                if(isMe) {
+                if (isMe) {
                     onBackgroundDialog();
                 }
                 break;
@@ -443,35 +465,91 @@ public class BlogMainFragment extends Fragment implements View.OnClickListener  
                 break;
             }
             case R.id.btn_tab_collabo: {
-                //Toast.makeText(getContext(), "서비스 준비중입니다.", Toast.LENGTH_SHORT).show();
-                Intent mIntent = new Intent(getContext(), MainActivity.class);
+                Toast.makeText(getContext(), "서비스 준비중입니다.", Toast.LENGTH_SHORT).show();
+                /*Intent mIntent = new Intent(getContext(), MainActivity.class);
                 mIntent.putExtra(DefineContentType.KEY_ON_NEW_REQUEST, DefineContentType.TYPE_ON_NEW_REPLACE);
                 mIntent.putExtra(DefineContentType.KEY_ON_NEW_WHERE, DefineContentType.TO_SPACE);
 
-                startActivity(mIntent);
+                startActivity(mIntent);*/
                 break;
             }
 
             case R.id.btn_fanList: {
-                if(isMe || mBlogData.arrFans.contains(PropertyManager.getInstance().mUser.sBlogKey)) {
+                if (isMe) {
                     Intent mIntent = new Intent(getContext(), SimpleTabUserListActivity.class);
                     mIntent.putExtra(DefineNetwork.BLOG_KEY, mBlogData.sBlogKey);
                     startActivity(mIntent);
-                }else{
-                    //+1
+                } else if (mBlogData.arrFans.contains(PropertyManager.getInstance().mUser.sBlogKey)) {
+                    PUTFanRequest request = new PUTFanRequest();
+                    request.setURL(String.format(DefineNetwork.UNFAN, mBlogData.sBlogKey));
+                    MyBlogController.getInstance().putFan(request, new NetworkProcess.OnResultListener<String>() {
+                        @Override
+                        public void onSuccess(NetworkRequest<String> request, String result) {
+                            Toast.makeText(getContext(), "요청이 완료 되었습니다.", Toast.LENGTH_SHORT).show();
+                            getBlogInfo();
+                        }
+
+                        @Override
+                        public void onFail(NetworkRequest<String> request, int code) {
+                            Toast.makeText(getContext(), "잠시 후 다시 시도해 주세요. -" + code, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    PUTFanRequest request = new PUTFanRequest();
+                    request.setURL(String.format(DefineNetwork.FAN, mBlogData.sBlogKey));
+                    MyBlogController.getInstance().putFan(request, new NetworkProcess.OnResultListener<String>() {
+                        @Override
+                        public void onSuccess(NetworkRequest<String> request, String result) {
+                            Toast.makeText(getContext(), mBlogData.sArtist+"님의 팬이 되셨습니다.", Toast.LENGTH_SHORT).show();
+                            getBlogInfo();
+                        }
+
+                        @Override
+                        public void onFail(NetworkRequest<String> request, int code) {
+                            Toast.makeText(getContext(), "잠시 후 다시 시도해 주세요. -" + code, Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
                 break;
             }
             case R.id.btn_imissyou: {
-                if (isMe || mBlogData.arrFans.contains(PropertyManager.getInstance().mUser.sBlogKey)) {
+                if (isMe) {
                     Intent mIntent = new Intent(getContext(), SimpleSingleUserListActivity.class);
                     mIntent.putExtra(DefineNetwork.BLOG_KEY, mBlogData.sBlogKey);
                     mIntent.putExtra(DefineNetwork.USER_LIST_REQUEST, DefineNetwork.USER_LIST_TYPE_IMISSU);
                     startActivity(mIntent);
+                } else if (mBlogData.arrIMissYous.contains(PropertyManager.getInstance().mUser.sBlogKey)) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setIcon(android.R.drawable.ic_dialog_alert);
+                    builder.setTitle("이미 I Miss You 한 아티스트 입니다.");
+                    builder.setNeutralButton("확인", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    builder.setCancelable(false);
+                    builder.create().show();
+
                 } else {
-                    //+1
-                    //onConfirmDialog(v);
+                    onConfirmDialog(v);
                 }
+                break;
+            }
+            case R.id.text_fan_count: {
+
+                Intent mIntent = new Intent(getContext(), SimpleTabUserListActivity.class);
+                mIntent.putExtra(DefineNetwork.BLOG_KEY, mBlogData.sBlogKey);
+                startActivity(mIntent);
+
+                break;
+            }
+            case R.id.text_imissu_count: {
+                Intent mIntent = new Intent(getContext(), SimpleSingleUserListActivity.class);
+                mIntent.putExtra(DefineNetwork.BLOG_KEY, mBlogData.sBlogKey);
+                mIntent.putExtra(DefineNetwork.USER_LIST_REQUEST, DefineNetwork.USER_LIST_TYPE_IMISSU);
+                startActivity(mIntent);
+
                 break;
             }
             default:

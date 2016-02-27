@@ -54,6 +54,8 @@ public class MapFragment extends Fragment {
         protected Boolean doInBackground(String... params) {
             mapView.setSKPMapApiKey("9e670e63-cefd-39ea-b3a8-d3aa55672ecd");
             mapView.setLanguage(TMapView.LANGUAGE_KOREAN);
+            mapView.setIconVisibility(true);
+            mapView.setZoomLevel(17);
             return true;
         }
 
@@ -97,12 +99,12 @@ public class MapFragment extends Fragment {
 
     private void moveMap(double lat, double lng) {
         mapView.setCenterPoint(lng, lat);
-        mapView.setZoomLevel(13);
+        mapView.setZoomLevel(17);
     }
 
     private void setMyLocation(double lat, double lng) {
         mapView.setLocationPoint(lng, lat);
-        Bitmap bm = ((BitmapDrawable) getResources().getDrawable(R.drawable.ic_stub)).getBitmap();
+        Bitmap bm = ((BitmapDrawable) getResources().getDrawable(R.drawable.mylocation_icon)).getBitmap();
         mapView.setIcon(bm);
         mapView.setIconVisibility(true);
     }
@@ -110,10 +112,11 @@ public class MapFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        mLM.requestSingleUpdate(LocationManager.GPS_PROVIDER, mListener, null);
 
-        // mLM.requestSingleUpdate(LocationManager.KEY_PROXIMITY_ENTERING, pendi;
-        // ;
+
+        mLM.requestSingleUpdate(LocationManager.GPS_PROVIDER, mListener, null);
+        mLM.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, mListener, null);
+
     }
 
     @Override

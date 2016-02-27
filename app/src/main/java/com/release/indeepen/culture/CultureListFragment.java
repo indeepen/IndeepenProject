@@ -1,9 +1,11 @@
 package com.release.indeepen.culture;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.Gravity;
@@ -11,13 +13,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.release.indeepen.DefineContentType;
 import com.release.indeepen.DefineNetwork;
 import com.release.indeepen.MainActivity;
 import com.release.indeepen.R;
+import com.release.indeepen.content.ContentData;
+import com.release.indeepen.content.OptionView;
+import com.release.indeepen.content.art.singleList.ContentSingleListAdapter;
+import com.release.indeepen.content.art.singleList.SingleImageView;
+import com.release.indeepen.content.art.singleList.SingleMusicView;
+import com.release.indeepen.content.art.singleList.SingleYoutubeView;
+import com.release.indeepen.management.musicManager.MusicManager;
 import com.release.indeepen.management.networkManager.NetworkProcess;
 import com.release.indeepen.management.networkManager.NetworkRequest;
 import com.release.indeepen.management.networkManager.netArt.data.ContentResultList;
@@ -41,9 +52,11 @@ public class CultureListFragment extends Fragment {
     int nType;
     FragmentManager mFM;
     CultureLocalFragment mLocalF;
-    TypePopupWindow popup_type;
-    DatePopupWindow popup_date;
-    Button btn_local, btn_type, btn_date;
+    public TypePopupWindow popup_type;
+    public DatePopupWindow popup_date;
+    public Button btn_local, btn_type, btn_date;
+    int nSaveIdx = -1;
+    int nSaveTop = 0;
 
     public CultureListFragment() {
 
@@ -59,11 +72,11 @@ public class CultureListFragment extends Fragment {
         vList = (ListView) view.findViewById(R.id.list_single);
         vHeader = new CultureHeaderView(getContext());
 
-        mAdapter = new CultureAdapter();
+
         vList.getHeaderViewsCount();
         //vList.addHeaderView(vHeader);
         vList.setHeaderDividersEnabled(false);
-        vList.setAdapter(mAdapter);
+
 
         vList.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
@@ -82,8 +95,6 @@ public class CultureListFragment extends Fragment {
                 }
             }
         });
-
-        initData();
 
         btn_local = (Button) vHeader.findViewById(R.id.btn_local);
         btn_date = (Button) vHeader.findViewById(R.id.btn_date);
@@ -135,7 +146,41 @@ public class CultureListFragment extends Fragment {
             }
         });
 
+        if (nSaveIdx != -1) {
+            initData();
+            vList.setAdapter(mAdapter);
+            vList.setSelectionFromTop(nSaveIdx, nSaveTop);
+        } else {
+            mAdapter = new CultureAdapter();
+            vList.setAdapter(mAdapter);
+
+            initData();
+        }
+
+        if (savedInstanceState != null) {
+            // Restore last state for checked position.
+            nSaveIdx = savedInstanceState.getInt("index", -1);
+            nSaveTop = savedInstanceState.getInt("top", 0);
+            if (nSaveIdx != -1) {
+                vList.setSelectionFromTop(nSaveIdx, nSaveTop);
+            }
+        }
+
         return view;
+    }
+
+    public void setChageData(int type, int positon, CultureItemData data) {
+        switch (type) {
+            case DefineContentType.DELETE: {
+                mAdapter.removeData(positon);
+                break;
+            }
+            case DefineContentType.LIKE:
+            case DefineContentType.COMMENT: {
+                mAdapter.changeData(positon, data);
+            }
+        }
+        mAdapter.notifyDataSetChanged();
     }
 
 
@@ -160,14 +205,14 @@ public class CultureListFragment extends Fragment {
 
     private void getMoreItem() {
         CultureListRequest request = new CultureListRequest();
-        if (null != getArguments() && DefineContentType.FROM_CULTURE == getArguments().getInt(DefineContentType.KEY_ON_NEW_FROM)){
+        if (null != getArguments() && DefineContentType.FROM_CULTURE == getArguments().getInt(DefineContentType.KEY_ON_NEW_FROM)) {
             if (isStart) {
                 request.setURL(DefineNetwork.CULTURE_LIST);
 
             } else {
                 request.setURL(DefineNetwork.CULTURE_LIST_MORE);
             }
-        }else{
+        } else {
             if (isStart) {
                 request.setURL(getArguments().getString(DefineNetwork.REQUEST_URL));
 
@@ -182,11 +227,20 @@ public class CultureListFragment extends Fragment {
                     if (0 < mAdapter.getCount()) {
                         mAdapter.clear();
                     }
-                    isStart = false;
                 }
+
                 List<CultureItemData> list = CultureController.getInstance().getRealContentList(result);
                 mAdapter.addList(list);
 
+                if (isStart) {
+                    int postion = getArguments().getInt(DefineNetwork.LIST_POSITION, 0);
+                    if (0 == postion) {
+                        vList.setSelectionFromTop(nSaveIdx, nSaveTop);
+                    } else {
+                        vList.setSelection(postion);
+                    }
+                    isStart = false;
+                }
             }
 
             @Override
@@ -198,7 +252,6 @@ public class CultureListFragment extends Fragment {
             }
         });
     }
-
 
 
     public CultureAdapter getAdapter() {
@@ -269,5 +322,53 @@ public class CultureListFragment extends Fragment {
         popup_date.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        MusicManager.getMusicManager().pause();
 
+        nSaveIdx = vList.getFirstVisiblePosition();
+        View v = vList.getChildAt(0);
+        nSaveTop = (v == null) ? 0 : (v.getTop() - vList.getPaddingTop());
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        super.onResume();
+        if (!isStart) {
+            isStart = true;
+            getMoreItem();
+
+        }
+    }
+
+    public View getViewByPosition(int pos, ListView listView) {
+        final int firstListItemPosition = listView.getFirstVisiblePosition();
+        final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
+
+        if (pos < firstListItemPosition || pos > lastListItemPosition) {
+            return listView.getAdapter().getView(pos, null, listView);
+        } else {
+            final int childIndex = pos - firstListItemPosition;
+            return listView.getChildAt(childIndex);
+        }
+    }
+
+    public boolean closeOptionsPop() {
+        boolean result = false;
+        View view = getViewByPosition(vList.getFirstVisiblePosition(), vList);
+        if(view instanceof SingleMusicView || view instanceof SingleImageView || view instanceof SingleYoutubeView || view instanceof CultureItemView){
+            result = ((OptionView)view).closePopup();
+        }
+
+        view = getViewByPosition(vList.getFirstVisiblePosition()+1, vList);
+        if(view instanceof SingleMusicView || view instanceof SingleImageView || view instanceof SingleYoutubeView || view instanceof CultureItemView){
+            if(((OptionView)view).closePopup() && !result){
+                result = true;
+            }
+        }
+        return result;
+    }
 }

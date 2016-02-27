@@ -47,6 +47,7 @@ public class MusicChoiceActivity extends AppCompatActivity implements View.OnCli
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar_select));
         getSupportActionBar().setTitle("음원 선택");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back);
 
         musicChoiceActivity = this;
 
@@ -101,7 +102,9 @@ public class MusicChoiceActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 vList.setItemChecked(position, true);
-        }
+                view.setBackground(getResources().getDrawable(R.drawable.mymusic_selected));
+
+            }
     }
 
     );

@@ -12,11 +12,13 @@ import java.util.List;
 public class ContentImageData extends ContentData {
 
     public List<String> arrIMGs;
+    public List<String> arrThumbs;
     public List<String> arrIMGName;
 
     public ContentImageData(){
         mUserData = new UserData();
         arrIMGs = new ArrayList<String>();
         arrIMGName = new ArrayList<String>();
+        arrThumbs = new ArrayList<String>();
     }
 }

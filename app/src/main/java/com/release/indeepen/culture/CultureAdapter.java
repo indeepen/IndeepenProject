@@ -4,6 +4,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import com.release.indeepen.content.ContentData;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +14,17 @@ import java.util.List;
  */
 public class CultureAdapter  extends BaseAdapter{
     List<CultureItemData> items = new ArrayList<CultureItemData>();
+    CultureListFragment fragment;
 
+    public void setFragment(CultureListFragment fragment){
+        this.fragment = fragment;
+    }
+    public void changeData(int position, CultureItemData data) {
+        items.set(position, data);
+    }
+    public void removeData(int position) {
+        items.remove(position);
+    }
 
     public void add(CultureItemData item) {
         items.add(item);
@@ -27,6 +39,7 @@ public class CultureAdapter  extends BaseAdapter{
         items.clear();
         notifyDataSetChanged();
     }
+
 
     @Override
     public int getCount() {
@@ -46,12 +59,16 @@ public class CultureAdapter  extends BaseAdapter{
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         CultureItemView view;
+
         if (convertView == null) {
             view =  new CultureItemView(parent.getContext());
         } else {
             view = (CultureItemView) convertView;
         }
-        view.setItemData(items.get(position));
+        view.setItemData(items.get(position), fragment, position);
+
+
+        //view.setTag(position);
         return view;
     }
 }

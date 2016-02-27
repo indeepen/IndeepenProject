@@ -20,9 +20,13 @@ import com.release.indeepen.DefineContentType;
 import com.release.indeepen.DefineNetwork;
 import com.release.indeepen.MainActivity;
 import com.release.indeepen.R;
+import com.release.indeepen.content.OptionView;
+import com.release.indeepen.content.art.ContentImageData;
 import com.release.indeepen.content.art.ContentMusicData;
 import com.release.indeepen.content.art.detail.ContentDetailActivity;
 import com.release.indeepen.culture.OptionPopupWindow;
+import com.release.indeepen.fan.FanMainFragment;
+import com.release.indeepen.login.PropertyManager;
 import com.release.indeepen.management.dateManager.DateManager;
 import com.release.indeepen.management.musicManager.MusicManager;
 import com.release.indeepen.management.networkManager.NetworkProcess;
@@ -30,27 +34,27 @@ import com.release.indeepen.management.networkManager.NetworkRequest;
 import com.release.indeepen.management.networkManager.netArt.DELETEContentRequest;
 import com.release.indeepen.management.networkManager.netComment.data.Comments;
 import com.release.indeepen.management.networkManager.netCommon.CommonController;
+import com.release.indeepen.management.networkManager.netCommon.PUTLikeRequest;
 import com.squareup.picasso.Picasso;
 
 /**
  * Created by lyo on 2015-11-05.
  */
-public class SingleMusicView extends LinearLayout implements View.OnClickListener, OptionPopupWindow.OptionClickListener {
+public class SingleMusicView extends LinearLayout implements View.OnClickListener, OptionPopupWindow.OptionClickListener, OptionView {
 
     LinearLayout like, comment;
     RelativeLayout option;
     ImageView vImg_like, vImg_comment, vImg_option;
     ImageView vThPro, vIMGEmotion, vBackground, vForeground;
-    TextView vTextArtist, vTextDate, vText, vTextLike, vTextComm, vTextOption, vTextCommUser1, vTextCommUser2, vTextCommCon1, vTextCommCon2;
+    TextView vTextArtist, vTextDate, vText, vTextLike, vTextComm/*, vTextOption, vTextCommUser1, vTextCommUser2, vTextCommCon1, vTextCommCon2*/;
     ContentMusicData mData;
     SingleHeaderView vHeader;
     SingleFooterView vFooter;
     SeekBar vSeek;
     AudioManager mAM;
-
+    OptionPopupWindow popup;
     MusicManager playerManager;
-    TextView[] comments;
-    TextView[] commentUser;
+
 
 
     boolean isFirstPlay = true;
@@ -95,18 +99,15 @@ public class SingleMusicView extends LinearLayout implements View.OnClickListene
 
         vTextLike = (TextView) vFooter.findViewById(R.id.text_image_single_like);
         vTextComm = (TextView) vFooter.findViewById(R.id.text_image_single_comm);
-        vTextCommUser1 = (TextView) vFooter.findViewById(R.id.text_image_single_nick1);
+      /*  vTextCommUser1 = (TextView) vFooter.findViewById(R.id.text_image_single_nick1);
         vTextCommUser2 = (TextView) vFooter.findViewById(R.id.text_image_single_nick2);
         vTextCommCon1 = (TextView) vFooter.findViewById(R.id.text_image_single_comm1);
         vTextCommCon2 = (TextView) vFooter.findViewById(R.id.text_image_single_comm2);
 
-        comments = new TextView[]{vTextCommCon1, vTextCommCon2};
-        commentUser = new TextView[]{vTextCommUser1, vTextCommUser2};
-
         vTextCommUser1.setOnClickListener(this);
         vTextCommUser2.setOnClickListener(this);
         vTextCommCon1.setOnClickListener(this);
-        vTextCommCon2.setOnClickListener(this);
+        vTextCommCon2.setOnClickListener(this);*/
         vTextLike.setOnClickListener(this);
         vTextComm.setOnClickListener(this);
 
@@ -133,10 +134,10 @@ public class SingleMusicView extends LinearLayout implements View.OnClickListene
         switch (v.getId()) {
             case R.id.text_image_single_text:
             case R.id.img_image_single_emotion:
-            case R.id.text_image_single_nick1:
+      /*      case R.id.text_image_single_nick1:
             case R.id.text_image_single_nick2:
             case R.id.text_image_single_comm1:
-            case R.id.text_image_single_comm2: {
+            case R.id.text_image_single_comm2: */{
                 Intent mIntent = new Intent(getContext(), ContentDetailActivity.class);
                 mIntent.putExtra(DefineContentType.BUNDLE_DATA_REQUEST, mData.sContentKey);
                 mIntent.putExtra(DefineContentType.BUNDLE_DATA_TYPE, mData.nArtType);
@@ -160,8 +161,53 @@ public class SingleMusicView extends LinearLayout implements View.OnClickListene
             case R.id.like:
             case R.id.image_single_like:
             case R.id.text_image_single_like: {
-                Toast.makeText(getContext(), "좋다", Toast.LENGTH_SHORT).show();
-                vImg_like.setSelected(!vImg_like.isSelected());
+                if(vImg_like.isSelected()){
+                    PUTLikeRequest request = new PUTLikeRequest();
+                    request.setURL(String.format(DefineNetwork.LIKE, mData.sContentKey, "unlike"));
+
+                    CommonController.getInstance().like(request, new NetworkProcess.OnResultListener<String>() {
+                        @Override
+                        public void onSuccess(NetworkRequest<String> request, String result) {
+                            Toast.makeText(getContext(), "좋아요가 취소 되었습니다.", Toast.LENGTH_SHORT).show();
+                            int nCount = Integer.parseInt(vTextLike.getText().toString());
+                            vTextLike.setText(nCount-1+"");
+                            mData.nLikeCount -= 1;
+                            for (int idx = 0; idx < mData.arrLikes.size(); idx++) {
+                                if (PropertyManager.getInstance().mUser.sBlogKey.equals(mData.arrLikes.get(idx))) {
+                                    mData.arrLikes.remove(idx);
+                                    break;
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFail(NetworkRequest<String> request, int code) {
+                            Toast.makeText(getContext(), "잠시 후 다시 시도해 주세요. "+code, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                }else{
+                    PUTLikeRequest request = new PUTLikeRequest();
+                    request.setURL(String.format(DefineNetwork.LIKE, mData.sContentKey, "like"));
+
+                    CommonController.getInstance().like(request, new NetworkProcess.OnResultListener<String>() {
+                        @Override
+                        public void onSuccess(NetworkRequest<String> request, String result) {
+                            Toast.makeText(getContext(), "좋아요", Toast.LENGTH_SHORT).show();
+                            int nCount = Integer.parseInt(vTextLike.getText().toString());
+                            vTextLike.setText(nCount + 1 + "");
+                            mData.nLikeCount += 1;
+                            mData.arrLikes.add(PropertyManager.getInstance().mUser.sBlogKey);
+                        }
+
+                        @Override
+                        public void onFail(NetworkRequest<String> request, int code) {
+                            Toast.makeText(getContext(), "잠시 후 다시 시도해 주세요. "+code, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                }
+                vImg_like.setSelected(!vTextLike.isSelected());
                 break;
             }
             case R.id.comment:
@@ -171,6 +217,7 @@ public class SingleMusicView extends LinearLayout implements View.OnClickListene
                 getContext().startActivity(mIntent);*/
                 Intent mIntent = new Intent(getContext(), CommentActivity.class);
                 mIntent.putExtra(DefineNetwork.CONTENT_KEY, mData.sContentKey);
+                mIntent.putExtra(DefineNetwork.CONTENT_DATA, mData);
                 getContext().startActivity(mIntent);
                 break;
             }
@@ -204,7 +251,7 @@ public class SingleMusicView extends LinearLayout implements View.OnClickListene
     }
 
     @Override
-    public void onClickEvent(int mode) {
+    public void onOptionClickEvent(int mode) {
         switch (mode){
             case OptionPopupWindow.UNLIKE:{
                 break;
@@ -222,6 +269,7 @@ public class SingleMusicView extends LinearLayout implements View.OnClickListene
                     @Override
                     public void onSuccess(NetworkRequest<String> request, String result) {
                         Toast.makeText(getContext(), "삭제 되었습니다.", Toast.LENGTH_SHORT).show();
+                        mFanMainFragment.setChageData(DefineContentType.DELETE, nPosition, null);
                     }
 
                     @Override
@@ -234,80 +282,35 @@ public class SingleMusicView extends LinearLayout implements View.OnClickListene
         }
     }
     private void onOptionPopupWindow(View view) {
-        OptionPopupWindow popup;
         popup = new OptionPopupWindow(getContext());
         popup.setOnOptionClick(this);
         popup.setOutsideTouchable(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             popup.showAsDropDown(comment, Gravity.RELATIVE_LAYOUT_DIRECTION, 16, 0);
         }
-    }/*
-    public void onOptionDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        //builder.setIcon(android.R.drawable.ic_dialog_alert);
-        // builder.setTitle("List Dialog");
-        builder.setItems(new String[]{"싫어요", "공유", "수정", "삭제"}, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Intent mIntent;
-                switch (which) {
-                    case 0: {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                        //builder.setIcon(android.R.drawable.ic_dialog_alert);
-                        //builder.setTitle("Alert Dialog");
-                        builder.setMessage("이 게시물을 정말 싫어요 하시겠습니까?");
-                        builder.setPositiveButton("취소", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(getContext(), "봐줌", Toast.LENGTH_SHORT).show();
+        popup.setFocusable(true);
+        setFocusable(true);
+    }
 
-                            }
-                        });
-                        builder.setNeutralButton("싫어요", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(getContext(), "넌 신고", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        builder.setCancelable(false);
-                        builder.create().show();
-                        break;
-                    }
-                    case 1: {
+    FanMainFragment mFanMainFragment;
+    int nPosition;
 
-                        break;
-                    }
-                    case 2: {
-                        //mIntent = new Intent(getContext(), MediaSingleChoiceActivity.class);
-                        //mIntent.putExtra(DefineContentType.SELECT_IMAGE, DefineContentType.ACTIVITY_TYPE_PROFILE_IMG);
-                        //startActivity(mIntent);
-                        break;
-                    }
-                    case 3: {
-                        // mIntent = new Intent(getContext(), MediaSingleChoiceActivity.class);
-                        //mIntent.putExtra(DefineContentType.SELECT_IMAGE, DefineContentType.ACTIVITY_TYPE_PROFILE_IMG);
-                        // startActivity(mIntent);
-                        break;
-                    }
-                }
-
-            }
-        });
-        builder.create().show();
-    }*/
-
-    public void setData(ContentMusicData data) {
+    public void setData(ContentMusicData data, FanMainFragment fanMainFragment, int position) {
         if (null == data) return;
+        nPosition = position;
+        mFanMainFragment = fanMainFragment;
         mData = data;
-
-        //ImageLoader.getInstance().displayImage(mData.mUserData.thProfile, vThPro);
-        //ImageLoader.getInstance().displayImage(mData.sMusicBackIMG, vBackground);
+        vImg_like.setSelected(false);
+        String user = PropertyManager.getInstance().mUser.sBlogKey;
+        if(mData.arrLikes.contains(user)){
+            vImg_like.setSelected(true);
+        }
         Picasso.with(getContext()).load(mData.mUserData.thProfile).placeholder(R.drawable.ic_empty).error(R.drawable.ic_error).fit().into(vThPro);
-        Picasso.with(getContext()).load(mData.sMusicBackIMG).placeholder(R.drawable.ic_empty).error(R.drawable.ic_error).into(vBackground);
+        Picasso.with(getContext()).load(mData.sMusicBackThumb).placeholder(R.drawable.ic_empty).error(R.drawable.ic_error).resize(this.getResources().getDisplayMetrics().widthPixels, 0).into(vBackground);
         vTextArtist.setText(mData.mUserData.sArtist);
         vForeground.setVisibility(VISIBLE);
         playerManager = MusicManager.getMusicManager();
-
+        playerManager.seekbarReset(vSeek);
         isFirstPlay = true;
 
         vTextDate.setText(DateManager.getInstance().getPastTime(mData.sWriteDate));
@@ -320,23 +323,6 @@ public class SingleMusicView extends LinearLayout implements View.OnClickListene
             vText.setText(mData.sText);
         }
 
-        if (0 < mData.arrComment.size()) {
-            int idx = 0;
-            for (Comments comm : mData.arrComment) {
-                if(null != comm.mWriter) {
-                    commentUser[idx].setVisibility(VISIBLE);
-                    comments[idx].setVisibility(VISIBLE);
-                    commentUser[idx].setText(comm.mWriter.sArtist);
-                    comments[idx].setText(comm.sComm);
-                }
-                idx++;
-            }
-        }else{
-            commentUser [0].setVisibility(INVISIBLE);
-            comments[0].setVisibility(INVISIBLE);
-            commentUser [1].setVisibility(INVISIBLE);
-            comments[1].setVisibility(INVISIBLE);
-        }
 
         vTextComm.setText(mData.nCommentCount+"");
         vTextLike.setText(mData.nLikeCount+"");
@@ -370,8 +356,15 @@ public class SingleMusicView extends LinearLayout implements View.OnClickListene
                 break;
             }
         }
+    }
 
-
+    @Override
+    public boolean closePopup() {
+        if(null != popup && popup.isShowing()) {
+            popup.dismiss();
+            return true;
+        }
+        return false;
     }
 
 }

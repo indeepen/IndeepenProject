@@ -5,7 +5,6 @@ import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.release.indeepen.R;
 import com.squareup.picasso.Picasso;
 

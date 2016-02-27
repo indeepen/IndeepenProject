@@ -11,7 +11,6 @@ import com.release.indeepen.management.networkManager.NetworkRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,16 +19,20 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Objects;
 
 /**
  * Created by lyo on 2015-11-12.
  */
 public class POSTMusicContentRequest extends NetworkRequest<String> {
 
-    @Override
+    String sURL;
+
     public URL getURL() throws MalformedURLException {
-        return new URL("http://54.64.26.200/workPosts");
+        return new URL(sURL);
+    }
+
+    public void setURL(String url) {
+        sURL = url;
     }
 
     @Override
@@ -57,10 +60,10 @@ public class POSTMusicContentRequest extends NetworkRequest<String> {
 
             multipart.addFilePart(DefineNetwork.POST_FILE, new File(((ContentMusicData)mData).sMusicBackIMG));
             multipart.addFilePart(DefineNetwork.POST_FILE, new File(((ContentMusicData)mData).sMusicPath));
-            multipart.addFormField(DefineNetwork.POST_IMAGE_BLOG_ID, mData.sBlogKey);
+            multipart.addFormField(DefineNetwork.POST_BLOG_ID, mData.sBlogKey);
             multipart.addFormField(DefineNetwork.POST_IMAGE_ARTTYPE, mData.nArtType+"");
             multipart.addFormField(DefineNetwork.POST_IMAGE_EMOTION, mData.nEmotion+"");
-            multipart.addFormField(DefineNetwork.POST_IMAGE_TEXT, mData.sText);
+            multipart.addFormField(DefineNetwork.POST_TEXT, mData.sText);
             multipart.finish();
         } catch (IOException e) {
             e.printStackTrace();

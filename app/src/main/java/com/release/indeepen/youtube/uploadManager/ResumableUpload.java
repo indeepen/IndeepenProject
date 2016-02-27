@@ -16,6 +16,7 @@ package com.release.indeepen.youtube.uploadManager;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -26,6 +27,7 @@ import android.provider.MediaStore.Video.Thumbnails;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.view.WindowManager;
 
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
@@ -38,6 +40,9 @@ import com.google.api.services.youtube.model.VideoListResponse;
 import com.google.api.services.youtube.model.VideoSnippet;
 import com.google.api.services.youtube.model.VideoStatus;
 import com.release.indeepen.R;
+import com.release.indeepen.SharedApplication;
+import com.release.indeepen.create.selectMedia.CreateImageContentActivity;
+import com.release.indeepen.create.selectMedia.MediaMultiChoiceActivity;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -81,6 +86,8 @@ public class ResumableUpload {
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
 
+
+
         Intent notificationIntent = new Intent(context, ReviewActivity.class);
         notificationIntent.setData(mFileUri);
         notificationIntent.setAction(Intent.ACTION_VIEW);
@@ -115,9 +122,9 @@ public class ResumableUpload {
        * and use your own standard names.
        */
             Calendar cal = Calendar.getInstance();
-            snippet.setTitle("인디펀 테스트" + cal.getTime()); // 동영상 제목
-            snippet.setDescription("인디펀 테스트" + cal.getTime());  // 동영상 설명
-            snippet.setChannelId(Constants.UPLOAD_PLAYLIST); //주석
+            snippet.setTitle("" + cal.getTime()); // 동영상 제목
+            snippet.setDescription("" + cal.getTime());  // 동영상 설명
+            //snippet.setChannelId(Constants.UPLOAD_PLAYLIST); //주석
             // Set your keywords.
             //snippet.setTags(Arrays.asList(Constants.DEFAULT_KEYWORD, Upload.generateKeywordFromPlaylistId(Constants.UPLOAD_PLAYLIST))); //주석
 

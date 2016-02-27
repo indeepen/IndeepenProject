@@ -2,11 +2,8 @@ package com.release.indeepen.create.selectMedia;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -15,8 +12,6 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,15 +20,16 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.release.indeepen.DefineContentType;
 import com.release.indeepen.R;
+import com.release.indeepen.content.ContentData;
 import com.release.indeepen.content.art.ContentImageData;
+import com.release.indeepen.culture.CultureItemData;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MediaMultiChoiceActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     static MediaMultiChoiceActivity mediaMultiChoiceActivity;
@@ -42,8 +38,10 @@ public class MediaMultiChoiceActivity extends AppCompatActivity implements Loade
     GridView vGridView;
     SimpleCursorAdapter mAdapter;
     //int nCase;
-    ContentImageData mData;
+    ContentData mData;
     int dataColumnIndex = -1;
+    List<String> arrSaveImgs;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +52,12 @@ public class MediaMultiChoiceActivity extends AppCompatActivity implements Loade
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mediaMultiChoiceActivity = this;
-
-        mData = new ContentImageData();
+        if(DefineContentType.SINGLE_ART_TYPE_CULTURE == getIntent().getIntExtra(DefineContentType.BUNDLE_DATA_TYPE, -1)){
+            mData = new CultureItemData();
+        }else {
+            mData = new ContentImageData();
+        }
+        arrSaveImgs = new ArrayList<String>();
 
         vGridView = (GridView) findViewById(R.id.grid_single_choice);
         //nCase = getIntent().getIntExtra(DefineContentType.SELECT_IMAGE, -1);
@@ -78,7 +80,7 @@ public class MediaMultiChoiceActivity extends AppCompatActivity implements Loade
                     uri = Uri.fromFile(new File(path));*/
                     Picasso.with(MediaMultiChoiceActivity.this)
                             .load(new File(path))// optional
-                            .fit()                       // optional
+                            .fit().centerCrop()                       // optional
                             .into(iv);
                     //ImageLoader.getInstance().displayImage(uri.toString(), iv);
                     /*try {
@@ -99,34 +101,34 @@ public class MediaMultiChoiceActivity extends AppCompatActivity implements Loade
 
         vGridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE);
         vGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                 @Override
-                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                     String selected = getSingleImage(position);
-                     if (mData.arrIMGs.size() < 6) {
-                         if (((CheckItemView) view).isChecked()) {
+                                             @Override
+                                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                                 String selected = getSingleImage(position);
+                                                 if (arrSaveImgs.size() < 6) {
+                                                     if (((CheckItemView) view).isChecked()) {
 
-                             if(!TextUtils.isEmpty(selected)) {
-                                 mData.arrIMGs.add(selected);
-                             }
+                                                         if (!TextUtils.isEmpty(selected)) {
+                                                             arrSaveImgs.add(selected);
+                                                         }
 
-                         } else {
+                                                     } else {
 
-                             for (int idx = 0; idx < mData.arrIMGs.size(); idx++) {
-                                 if (mData.arrIMGs.get(idx).equalsIgnoreCase(selected)) {
-                                     mData.arrIMGs.remove(idx);
-                                 }
-                             }
-                         }
-                     }
+                                                         for (int idx = 0; idx < arrSaveImgs.size(); idx++) {
+                                                             if (arrSaveImgs.get(idx).equalsIgnoreCase(selected)) {
+                                                                 arrSaveImgs.remove(idx);
+                                                             }
+                                                         }
+                                                     }
+                                                 }
 
-                     if (6 == mData.arrIMGs.size()){
-                         int SSS = mData.arrIMGs.size();
-                         vGridView.setItemChecked(position , false);
-                         mData.arrIMGs.remove(SSS - 1);
-                         Toast.makeText(MediaMultiChoiceActivity.this, "한번에 최대 5장까지 선택 가능합니다", Toast.LENGTH_SHORT).show();
-                     }
-                 }
-             }
+                                                 if (6 == arrSaveImgs.size()) {
+                                                     int SSS = arrSaveImgs.size();
+                                                     vGridView.setItemChecked(position, false);
+                                                     arrSaveImgs.remove(SSS - 1);
+                                                     Toast.makeText(MediaMultiChoiceActivity.this, "한번에 최대 5장까지 선택 가능합니다", Toast.LENGTH_SHORT).show();
+                                                 }
+                                             }
+                                         }
 
         );
 
@@ -172,27 +174,29 @@ public class MediaMultiChoiceActivity extends AppCompatActivity implements Loade
             finish();
         } else if (id == R.id.action_next) {
 
-            Intent mIntent = new Intent(MediaMultiChoiceActivity.this, CreateImageContentActivity.class);
+            if (0 == arrSaveImgs.size()) {
+                Toast.makeText(this, "사진을 선택하세요", Toast.LENGTH_SHORT).show();
+            } else {
 
-            mIntent.putExtra(DefineContentType.BUNDLE_DATA_REQUEST, mData);
+                if(DefineContentType.SINGLE_ART_TYPE_CULTURE == getIntent().getIntExtra(DefineContentType.BUNDLE_DATA_TYPE, -1)){
+                    ((CultureItemData)mData).arrIMGs = arrSaveImgs;
 
-            mIntent.putExtra(DefineContentType.BUNDLE_DATA_TYPE, getIntent().getIntExtra(DefineContentType.BUNDLE_DATA_TYPE, -1));
-            /*switch (nCase) {
-                case DefineContentType.SINGLE_ART_TYPE_PAINT: {
-                    mIntent.putExtra(DefineContentType.BUNDLE_DATA_TYPE, DefineContentType.SINGLE_ART_TYPE_PAINT);
-                    break;
-                }
-                case DefineContentType.SINGLE_ART_TYPE_PICTURE: {
-                    mIntent.putExtra(DefineContentType.BUNDLE_DATA_TYPE, DefineContentType.SINGLE_ART_TYPE_PICTURE);
-                    break;
-                }
-                case DefineContentType.SINGLE_ART_TYPE_MUSIC_PICTURE: {
-                    mIntent.putExtra(DefineContentType.BUNDLE_DATA_TYPE, DefineContentType.SINGLE_ART_TYPE_MUSIC_PICTURE);
-                    break;
-                }
+                    Intent mIntent = new Intent(MediaMultiChoiceActivity.this, CreateInputCultureActivity.class);
+                    mIntent.putExtra(DefineContentType.BUNDLE_DATA_REQUEST, mData);
+                    mIntent.putExtra(DefineContentType.BUNDLE_DATA_TYPE, getIntent().getIntExtra(DefineContentType.BUNDLE_DATA_TYPE, -1));
 
-            }*/
-            startActivity(mIntent);
+                    startActivity(mIntent);
+
+                }else {
+                    Intent mIntent = new Intent(MediaMultiChoiceActivity.this, CreateImageContentActivity.class);
+                    ((ContentImageData)mData).arrIMGs = arrSaveImgs;
+                    mIntent.putExtra(DefineContentType.BUNDLE_DATA_REQUEST, mData);
+
+                    mIntent.putExtra(DefineContentType.BUNDLE_DATA_TYPE, getIntent().getIntExtra(DefineContentType.BUNDLE_DATA_TYPE, -1));
+
+                    startActivity(mIntent);
+                }
+            }
         }
         return super.onOptionsItemSelected(item);
     }

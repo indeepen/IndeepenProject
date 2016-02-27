@@ -2,7 +2,6 @@ package com.release.indeepen.comment;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.EditText;
@@ -10,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.release.indeepen.DefineContentType;
 import com.release.indeepen.DefineNetwork;
 import com.release.indeepen.MainActivity;

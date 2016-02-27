@@ -2,8 +2,6 @@ package com.release.indeepen.management.networkManager.netMyBlog;
 
 import com.google.gson.stream.JsonReader;
 import com.release.indeepen.DefineNetwork;
-import com.release.indeepen.content.ContentData;
-import com.release.indeepen.content.art.ContentImageData;
 import com.release.indeepen.management.jsonManager.IndeepenJsonParser;
 import com.release.indeepen.management.networkManager.MultipartUtility;
 import com.release.indeepen.management.networkManager.NetworkRequest;
@@ -12,7 +10,6 @@ import com.release.indeepen.management.networkManager.netMyBlog.data.ChangeIMGDa
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,7 +49,7 @@ public class PUTProfileIMGRequest extends NetworkRequest<String> {
         try {
             multipart = new MultipartUtility(conns, DefineNetwork.METHOD_PUT, true);
 
-            multipart.addFormField(DefineNetwork.POST_IMAGE_BLOG_ID, mData.sChangeBlogKey);
+            multipart.addFormField(DefineNetwork.POST_BLOG_ID, mData.sChangeBlogKey);
             multipart.addFilePart(DefineNetwork.POST_FILE, new File(mData.sChangePath));
             multipart.finish();
 

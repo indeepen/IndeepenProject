@@ -17,6 +17,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.release.indeepen.R;
+import com.release.indeepen.login.PropertyManager;
 
 public class ReviewActivity extends Activity {
     VideoView mVideoView;
@@ -55,9 +56,7 @@ public class ReviewActivity extends Activity {
     }
 
     private void loadAccount() {
-        SharedPreferences sp = PreferenceManager
-                .getDefaultSharedPreferences(this);
-        mChosenAccountName = sp.getString(YoutubeUploadActivity.ACCOUNT_KEY, null);
+        mChosenAccountName = PropertyManager.getInstance().getChosenAccountName();
         invalidateOptionsMenu();
     }
 

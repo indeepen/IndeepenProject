@@ -5,6 +5,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import com.release.indeepen.DefineContentType;
+import com.release.indeepen.R;
 import com.release.indeepen.content.ContentData;
 
 import java.util.ArrayList;
@@ -65,6 +67,11 @@ public class TripleGridAdapter extends BaseAdapter {
             view = new ThumbImageView(parent.getContext());
         }
 
+        if(DefineContentType.SINGLE_ART_TYPE_YOUTUBE == ((ContentData) getItem(position)).nArtType || DefineContentType.SINGLE_ART_TYPE_MUSIC == ((ContentData) getItem(position)).nArtType|| DefineContentType.SINGLE_ART_TYPE_MUSIC_VIDEO == ((ContentData) getItem(position)).nArtType){
+            view.findViewById(R.id.play_icon).setVisibility(View.VISIBLE);
+        }else{
+            view.findViewById(R.id.play_icon).setVisibility(View.GONE);
+        }
         //view.setIMG(items.get(position).thIMG);
 
         view.setData(items.get(position));

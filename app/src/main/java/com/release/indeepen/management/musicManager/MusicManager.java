@@ -22,7 +22,7 @@ public class MusicManager {
     private static MediaPlayer mPlayer;
     private SeekBar seekBar;
     boolean isSeeking = false;
-
+    int max;
     public enum PlayState {
         IDLE,
         INITIALIZED,
@@ -67,7 +67,7 @@ public class MusicManager {
     public void init(SeekBar vSeek) {
         seekBar = vSeek;
 
-        int max = getDuration();
+        max = getDuration();
         vSeek.setMax(max);
         vSeek.setProgress(0);
 
@@ -156,8 +156,14 @@ public class MusicManager {
                 if (!isSeeking) {
                     int position = mPlayer.getCurrentPosition();
                     seekBar.setProgress(position);
+
                 }
-                mHandler.postDelayed(this, CHECK_INTERVAL);
+                if(seekBar.getProgress() == max){
+                    seekBar.setProgress(0);
+                    musicManager.pause();
+                }else {
+                    mHandler.postDelayed(this, CHECK_INTERVAL);
+                }
             }
         }
     };

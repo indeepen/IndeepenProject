@@ -20,9 +20,9 @@ public class SearchAdapter extends BaseAdapter {
 
     final int TYPE_COUNT = 3;
 
-    final int TYPE_HASHTAG = 0;
-    final int TYPE_BLOG = 1;
-    final int TYPE_SPACE = 2;
+    public final static int TYPE_HASHTAG = 0;
+    public final static int TYPE_BLOG = 1;
+    public final static int TYPE_SPACE = 2;
 
     List<Search> items = new ArrayList<Search>();
 

@@ -2,6 +2,7 @@ package com.release.indeepen.management.dateManager;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -27,14 +28,17 @@ public class DateManager {
     public boolean isEnd(String time) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm");
         long startTime= 0L;
+        long currTime= 0L;
         try {
             Date date = sdf.parse(time);
             startTime = date.getTime();
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        currTime = new Date(System.currentTimeMillis()).getTime();
 
-        return System.currentTimeMillis() > startTime? true : false;
+
+        return  currTime> startTime? true : false;
     }
 
 
@@ -78,23 +82,55 @@ public class DateManager {
         int min = nowMin - timeMin;
         int second = nowSec - timeSec;
 
-        if(year > 0){
+        if(year > 1){
             resutl = year +"년 전";
            if(month > 0) {
                resutl =year +"년 "+ month + "개월 전";
            }
-        }else if(month > 0){
+        }else if(month > 1){
             resutl = month +"개월 전";
-        }else if(day > 0){
+        }else if(day > 1){
             resutl = day +"일 전";
-        }else if(hour > 0){
+        }else if(hour > 1){
             resutl = hour +"시간 전";
-        }else if(min > 0){
+        }else if(min > 1){
             resutl = min +"분 전";
-        }else if(second > 0){
+        }else if(second > 1){
             resutl = second +"초 전";
         }
 
+
+       /* if(year > 0){
+            resutl = year +"년 전";
+            if(month > 0) {
+                resutl =year +"년 "+ month + "개월 전";
+            }
+        }else if(month > 0 && day >= 0){
+            resutl = month +"개월 전";
+        }else if(month == 0 && day > 0){
+            resutl = day +"일 전";
+        }else if(month > 0 && day < 0){
+            resutl = (today.getMaximum(Calendar.DAY_OF_MONTH) - timeDay) + nowDay +"일 전";
+        }else if(day > 0 && hour >= 0){
+            resutl = day +"일 전";
+        }else if(day == 0 && hour > 0){
+            resutl = hour +"시간 전";
+        }else if(hour > 0 && min >= 0){
+            resutl = hour +"시간 전";
+        }else if(day > 0 && hour < 0){
+            resutl = (24 - timeHour) + nowHour+"시간 전";
+        }else if(hour == 0 && min > 0){
+            resutl = min +"분 전";
+        }else if(hour > 0 && min < 0){
+            resutl = ((60 - timeMin) + nowMin) +"분 전";
+        }else if (min > 0 && second >= 0){
+            resutl = min +"분 전";
+        }else if(min > 0 && second < 0){
+            resutl = ((60 - timeSec) + nowSec) +"초 전";
+        }else if(second > 0){
+            resutl = second +"초 전";
+        }
+*/
         return resutl;
     }
 }

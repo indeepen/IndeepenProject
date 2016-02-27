@@ -5,16 +5,17 @@ import android.widget.Toast;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
+import com.release.indeepen.DefineContentType;
 
 /**
  * Created by lyo on 2015-11-09.
  */
 public class MyYoutubeFragment extends YouTubePlayerSupportFragment implements YouTubePlayer.OnInitializedListener {
 
+    //private static MyYoutubeFragment instance;
     String sPath;
 
-    public MyYoutubeFragment() {
-        initialize(DeveloperKey.DEVELOPER_KEY, this);
+    public  MyYoutubeFragment () {
     }
 
 
@@ -25,6 +26,8 @@ public class MyYoutubeFragment extends YouTubePlayerSupportFragment implements Y
 
             sPath = path.substring("https://youtu.be/".length());
         }
+        initialize(DeveloperKey.DEVELOPER_KEY,this);
+        //sPath = getArguments().getString(DefineContentType.YOUTUBE_PATH);
 
     }
 

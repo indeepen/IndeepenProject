@@ -80,7 +80,8 @@ public class ArtController {
 
             for (Resources resources : contens.mPostinfo.arrResources) {
                 if (resources.sFileType.contains("image")) {
-                    ((CultureItemData) mData).arrIMGs.add(Uri.parse(resources.sPath).toString());
+                    ((CultureItemData) mData).arrIMGs.add(resources.sPath);
+                    ((CultureItemData) mData).arrThumbs.add(resources.sThumb);
                 }
             }
 
@@ -108,7 +109,8 @@ public class ArtController {
                     }
                     for (Resources resources : contens.mPostinfo.arrResources) {
                         if (resources.sFileType.contains("image")) {
-                            ((ContentImageData) mData).arrIMGs.add(Uri.parse(resources.sPath).toString());
+                            ((ContentImageData) mData).arrIMGs.add(resources.sPath);
+                            ((ContentImageData) mData).arrThumbs.add(resources.sThumb);
                         }
                     }
                     break;
@@ -128,17 +130,26 @@ public class ArtController {
                         if (TextUtils.isEmpty(resources.sFileType)) break;
 
                         if (resources.sFileType.contains("image")) {
-                            ((ContentMusicData) mData).sMusicBackIMG = Uri.parse(resources.sPath).toString();
+                            if(null!= resources.sThumb) {
+                                ((ContentMusicData) mData).sMusicBackThumb = Uri.parse(resources.sThumb).toString();
+                            }else{
+                                ((ContentMusicData) mData).sMusicBackIMG = Uri.parse(resources.sPath).toString();
+                            }
                         } else if (resources.sFileType.contains("audio")) {
-                            ((ContentMusicData) mData).sMusicPath = Uri.parse(resources.sPath).toString();
+                            if(null!= resources.sThumb) {
+                                ((ContentMusicData) mData).sMusicPath = Uri.parse(resources.sThumb).toString();
+                            }else{
+                                ((ContentMusicData) mData).sMusicPath = Uri.parse(resources.sPath).toString();
+                            }
                             if (TextUtils.isEmpty(((ContentMusicData) mData).sMusicPath)) continue;
                         }
                     }
-                    if (TextUtils.isEmpty(((ContentMusicData) mData).sMusicBackIMG)) return null;
                     break;
                 }
-                case DefineContentType.SINGLE_ART_TYPE_YOUTUBE: {
+                case DefineContentType.SINGLE_ART_TYPE_YOUTUBE:
+                case DefineContentType.SINGLE_ART_TYPE_MUSIC_VIDEO: {
                     mData = new ContentYoutubeData();
+                    ((ContentYoutubeData) mData).sYouTubePath = contens.mPostinfo.sYouTubePath;
                     break;
                 }
 
@@ -150,11 +161,16 @@ public class ArtController {
         mData.sContentKey = contens.mPostinfo.sContentKey;
         mData.nCommentCount = contens.nCommentCnt;
         mData.sText = contens.mPostinfo.sContent;
-        mData.mUserData.sArtist = contens.mPostinfo.mWriter.sArtist;
-        mData.sBlogKey = contens.mPostinfo.mWriter.sBlogKey;
-        mData.nBlogType = contens.mPostinfo.mWriter.nBlogType;
-        mData.mUserData.sUserkey = contens.mPostinfo.mWriter.sUserkey;
-        mData.mUserData.thProfile = Uri.parse(contens.mPostinfo.mWriter.thProfile).toString();
+        if(null != contens.mPostinfo.mWriter) {
+            mData.mUserData.sArtist = contens.mPostinfo.mWriter.sArtist;
+            mData.sBlogKey = contens.mPostinfo.mWriter.sBlogKey;
+            mData.nBlogType = contens.mPostinfo.mWriter.nBlogType;
+            mData.mUserData.sUserkey = contens.mPostinfo.mWriter.sUserkey;
+            mData.mUserData.thProfile = contens.mPostinfo.mWriter.thProfile;
+        }else{
+           // return null;
+        }
+
         mData.sWriteDate = contens.mPostinfo.dCreateAt;
         mData.arrLikes = contens.mPostinfo.arrLikes;
         mData.nLikeCount = contens.mPostinfo.arrLikes.size();

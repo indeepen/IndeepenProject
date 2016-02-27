@@ -1,6 +1,7 @@
 package com.release.indeepen.search;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -8,9 +9,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.release.indeepen.DefineContentType;
 import com.release.indeepen.DefineNetwork;
+import com.release.indeepen.MainActivity;
 import com.release.indeepen.R;
 import com.release.indeepen.content.art.ContentImageData;
 import com.release.indeepen.management.networkManager.NetworkProcess;
@@ -56,6 +60,42 @@ public class SearchListFragment extends Fragment {
 
         nType = getArguments().getInt(DefineNetwork.REQUEST_TYPE);
 
+        vList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (mAdapter.getItemViewType(position)){
+                    case SearchAdapter.TYPE_HASHTAG: {
+                        Intent mIntent = new Intent(getContext(), MainActivity.class);
+                        mIntent.putExtra(DefineContentType.KEY_ON_NEW_REQUEST, DefineContentType.TYPE_ON_NEW_REPLACE);
+                        mIntent.putExtra(DefineContentType.BUNDLE_DATA_REQUEST, ((HashTagResult)mAdapter.getItem(position)).sHashTag);
+                        mIntent.putExtra(DefineContentType.KEY_ON_NEW_WHERE, DefineContentType.TO_SEARCH_TRIPLE);
+
+                        getContext().startActivity(mIntent);
+
+                        break;
+                    }
+                    case SearchAdapter.TYPE_BLOG: {
+                        Intent mIntent = new Intent(getContext(), MainActivity.class);
+                        mIntent.putExtra(DefineContentType.KEY_ON_NEW_REQUEST, DefineContentType.TYPE_ON_NEW_REPLACE);
+                        mIntent.putExtra(DefineNetwork.BLOG_KEY, ((BlogInfo)mAdapter.getItem(position)).sBlogKey);
+                        mIntent.putExtra(DefineContentType.KEY_ON_NEW_WHERE, DefineContentType.TO_BLOG);
+
+                        getContext().startActivity(mIntent);
+                        break;
+                    }
+                    case SearchAdapter.TYPE_SPACE: {
+                        Intent mIntent = new Intent(getContext(), MainActivity.class);
+                        mIntent.putExtra(DefineContentType.KEY_ON_NEW_REQUEST, DefineContentType.TYPE_ON_NEW_REPLACE);
+                        mIntent.putExtra(DefineNetwork.BLOG_KEY, ((SpaceInfo)mAdapter.getItem(position)).sBlogKey);
+                        mIntent.putExtra(DefineContentType.KEY_ON_NEW_WHERE, DefineContentType.TO_SPACE);
+
+                        getContext().startActivity(mIntent);
+
+                        break;
+                    }
+                }
+            }
+        });
 
         return view;
     }
@@ -68,6 +108,7 @@ public class SearchListFragment extends Fragment {
 
     public void searchKeyword(String keyword) {
         if (!TextUtils.isEmpty(keyword)) {
+            sKeyword = keyword;
             mAdapter.clear();
             switch (nType) {
                 case DefineNetwork.TYPE_SEARCH_ALL: {

@@ -6,9 +6,9 @@ import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.release.indeepen.R;
 import com.release.indeepen.content.ContentData;
+import com.release.indeepen.content.art.ContentYoutubeData;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -34,9 +34,11 @@ public class ThumbImageView extends FrameLayout {
     }
 
     void setData(ContentData data) {
-        if(!TextUtils.isEmpty(data.thIMG)) {
+        if(!TextUtils.isEmpty(data.sThumb)) {
             //ImageLoader.getInstance().displayImage(data.thIMG, thIMG);
-            Picasso.with(getContext()).load(data.thIMG).fit().placeholder(R.drawable.ic_empty).error(R.drawable.ic_error).into(thIMG);
+            Picasso.with(getContext()).load(data.sThumb).fit().centerCrop().placeholder(R.drawable.ic_empty).error(R.drawable.ic_error).into(thIMG);
+        }else if(!TextUtils.isEmpty(((ContentYoutubeData)data).sYouTubePath)) {
+            Picasso.with(getContext()).load("https://i1.ytimg.com/vi/" + ((ContentYoutubeData)data).sYouTubePath + "/mqdefault.jpg").fit().centerCrop().placeholder(R.drawable.ic_empty).error(R.drawable.ic_error).into(thIMG);
         }
         //thIMG.setImageResource(path);
     }

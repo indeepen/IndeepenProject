@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -35,6 +36,8 @@ import com.release.indeepen.management.networkManager.netMyBlog.MyBlogContentReq
 import com.release.indeepen.management.networkManager.netMyBlog.MyBlogController;
 import com.release.indeepen.management.networkManager.netMyBlog.data.BlogContentList;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -54,6 +57,7 @@ public class SearchTripleFragment extends Fragment {
     int nCategory;
     boolean isLastItem;
     boolean isStart;
+    String sKeyword;
 
     public SearchTripleFragment() {
         // Required empty public constructor
@@ -101,8 +105,18 @@ public class SearchTripleFragment extends Fragment {
 
                 mIntent.putExtra(DefineNetwork.LIST_POSITION, (int) (vGrid.getItemIdAtPosition(position)));
 
-                mIntent.putExtra(DefineNetwork.REQUEST_URL, DefineNetwork.RECOMMEND_SINGLE_LIST);
-                mIntent.putExtra(DefineNetwork.REQUEST_URL_MORE, DefineNetwork.RECOMMEND_SINGLE_LIST_MORE);
+                if(TextUtils.isEmpty(sKeyword)) {
+                    mIntent.putExtra(DefineNetwork.REQUEST_URL, DefineNetwork.RECOMMEND_SINGLE_LIST);
+                    mIntent.putExtra(DefineNetwork.REQUEST_URL_MORE, DefineNetwork.RECOMMEND_SINGLE_LIST_MORE);
+                }else{
+                    try {
+                        mIntent.putExtra(DefineNetwork.REQUEST_URL, String.format(DefineNetwork.HASHTAG_SINGLE_LIST,URLEncoder.encode(sKeyword, DefineNetwork.CHARACTER_SET)));
+                        mIntent.putExtra(DefineNetwork.REQUEST_URL_MORE, String.format(DefineNetwork.HASHTAG_SINGLE_LIST_MORE,URLEncoder.encode(sKeyword, DefineNetwork.CHARACTER_SET)));
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+
+                }
 
                 startActivity(mIntent);
             }
@@ -159,8 +173,10 @@ public class SearchTripleFragment extends Fragment {
 
     private void onPopupEmotion(View view) {
         emotion = new PopupEmotion(getContext());
-        emotion.setOutsideTouchable(false);
-        emotion.showAsDropDown(view);
+        emotion.setOutsideTouchable(true);
+        emotion.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        emotion.showAtLocation(view, Gravity.CENTER, 0, 0);
+
         emotion.btnAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -227,12 +243,10 @@ public class SearchTripleFragment extends Fragment {
 
     private void onPopupCategory(View view) {
         category = new PopupCategory(getContext());
-        category.setOutsideTouchable(true);
-        category.showAsDropDown(view);
-        category = new PopupCategory(getContext());
-        category.setOutsideTouchable(true);
+        category.setOutsideTouchable(false);
         category.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         category.showAtLocation(view, Gravity.CENTER, 0, 0);
+
 
         category.btnAll.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -301,17 +315,42 @@ public class SearchTripleFragment extends Fragment {
     private void getMoreItem() {
         MyBlogContentRequest contentRequest = new MyBlogContentRequest();
         String url = "";
-        if (isStart) {
-            //request.setURL(String.format(DefineNetwork.FNA_LIST_FILTER, nEmotion < 0 || nCategory == DefineContentType.SINGLE_ART_TYPE_CULTURE ? "" : nEmotion + "", nCategory < 0 ? "" : nCategory + ""));
-            url = DefineNetwork.RECOMMEND_TRIPLE_LIST;
-            contentRequest.setURL(url);
 
-        } else {
-            //request.setURL(String.format(DefineNetwork.FNA_LIST_FILTER_MORE, nEmotion < 0 || nCategory == DefineContentType.SINGLE_ART_TYPE_CULTURE ? "" : nEmotion + "", nCategory < 0 ? "" : nCategory + ""));
-            url = DefineNetwork.RECOMMEND_TRIPLE_LIST_MORE;
-            contentRequest.setURL(url);
+        if(null != getArguments()) {
+            sKeyword = getArguments().getString(DefineContentType.BUNDLE_DATA_REQUEST);
+            if(!TextUtils.isEmpty(sKeyword)) {
+                if (isStart) {
+                    //request.setURL(String.format(DefineNetwork.FNA_LIST_FILTER, nEmotion < 0 || nCategory == DefineContentType.SINGLE_ART_TYPE_CULTURE ? "" : nEmotion + "", nCategory < 0 ? "" : nCategory + ""));
+
+                    try {
+                        contentRequest.setURL(String.format(DefineNetwork.HASHTAG_TRIPLE_LIST, URLEncoder.encode(sKeyword, DefineNetwork.CHARACTER_SET)));
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+
+                } else {
+                    //request.setURL(String.format(DefineNetwork.FNA_LIST_FILTER_MORE, nEmotion < 0 || nCategory == DefineContentType.SINGLE_ART_TYPE_CULTURE ? "" : nEmotion + "", nCategory < 0 ? "" : nCategory + ""));
+                    try {
+                        contentRequest.setURL(String.format(DefineNetwork.HASHTAG_TRIPLE_LIST_MORE, URLEncoder.encode(sKeyword, DefineNetwork.CHARACTER_SET)));
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        }else {
+            if (isStart) {
+                //request.setURL(String.format(DefineNetwork.FNA_LIST_FILTER, nEmotion < 0 || nCategory == DefineContentType.SINGLE_ART_TYPE_CULTURE ? "" : nEmotion + "", nCategory < 0 ? "" : nCategory + ""));
+                url = DefineNetwork.RECOMMEND_TRIPLE_LIST;
+                contentRequest.setURL(url);
+
+            } else {
+                //request.setURL(String.format(DefineNetwork.FNA_LIST_FILTER_MORE, nEmotion < 0 || nCategory == DefineContentType.SINGLE_ART_TYPE_CULTURE ? "" : nEmotion + "", nCategory < 0 ? "" : nCategory + ""));
+                url = DefineNetwork.RECOMMEND_TRIPLE_LIST_MORE;
+                contentRequest.setURL(url);
+            }
         }
-        Log.e(this.getClass().toString(), url);
+
         MyBlogController.getInstance().getMyBlogContent(contentRequest, new NetworkProcess.OnResultListener<BlogContentList>() {
             @Override
             public void onSuccess(NetworkRequest<BlogContentList> request, BlogContentList result) {

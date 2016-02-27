@@ -1,5 +1,7 @@
 package com.release.indeepen.create.selectMedia;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -12,24 +14,31 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.release.indeepen.DefineContentType;
 import com.release.indeepen.DefineNetwork;
 import com.release.indeepen.R;
 import com.release.indeepen.content.art.ContentMusicData;
 import com.release.indeepen.create.BlogData;
+import com.release.indeepen.create.BlogListAdapter;
 import com.release.indeepen.create.CreateHeader;
+import com.release.indeepen.create.HorizontalListView;
 import com.release.indeepen.login.PropertyManager;
 import com.release.indeepen.management.musicManager.MusicManager;
 import com.release.indeepen.management.networkManager.NetworkProcess;
 import com.release.indeepen.management.networkManager.NetworkRequest;
 import com.release.indeepen.management.networkManager.netArt.ArtController;
 import com.release.indeepen.management.networkManager.netArt.POSTMusicContentRequest;
+import com.release.indeepen.management.networkManager.netMyBlog.MyBlogController;
+import com.release.indeepen.management.networkManager.netMyBlog.MyBlogInfoListRequest;
+import com.release.indeepen.management.networkManager.netMyBlog.data.BlogInfo;
+import com.release.indeepen.management.networkManager.netMyBlog.data.BlogInfoListResult;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -39,7 +48,7 @@ public class CreateMusicContentActivity extends AppCompatActivity implements Vie
     SeekBar vSeek;
     MusicManager playerManager;
     String sPath;
-    ImageView vImgBlog;
+    ImageView vImgBlog, showName;
     TextView vTextBlog;
     EditText vInput_Content;
     PopupSelectBlog popupSelectBlog;
@@ -48,7 +57,10 @@ public class CreateMusicContentActivity extends AppCompatActivity implements Vie
     CreateHeader vHeader;
 
     ContentMusicData mCreateData;
+    Boolean tag = false;
 
+    public HorizontalListView vList;
+    BlogListAdapter mAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,8 +83,58 @@ public class CreateMusicContentActivity extends AppCompatActivity implements Vie
         vTextBlog = (TextView) vHeader.findViewById(R.id.text_create_selected_blog);
         vGruop = (RadioGroup) vHeader.findViewById(R.id.group_emo);
 
-        vImgBlog.setOnClickListener(this);
-        vTextBlog.setOnClickListener(this);
+       /* vImgBlog.setOnClickListener(this);
+        vTextBlog.setOnClickListener(this);*/
+
+        vList = (HorizontalListView) vHeader.findViewById(R.id.list_create_header_blog);
+        mAdapter = new BlogListAdapter();
+        vList.setAdapter(mAdapter);
+
+
+
+        showName = (ImageView)  vHeader.findViewById(R.id.btn_show_name);
+        final LinearLayout setName = (LinearLayout)  vHeader.findViewById(R.id.set_name);
+        RelativeLayout name = (RelativeLayout)  vHeader.findViewById(R.id.layout_select_blog);
+        name.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (tag == false) {
+                    setName.setVisibility(View.VISIBLE);
+                    showName.setImageResource(R.drawable.btn_top);
+                    tag = true;
+                } else {
+                    setName.setVisibility(View.GONE);
+                    showName.setImageResource(R.drawable.btn_bottom);
+                    tag = false;
+                }
+
+            }
+        });
+
+        vList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                if (tag == false) {
+                    setName.setVisibility(View.VISIBLE);
+                    showName.setImageResource(R.drawable.btn_top);
+                    tag = true;
+                } else {
+                    setName.setVisibility(View.GONE);
+                    showName.setImageResource(R.drawable.btn_bottom);
+                    tag = false;
+                }
+
+                BlogInfo mBlogData = (BlogInfo) mAdapter.getItem(position);
+                mCreateData.sBlogKey = mBlogData.sBlogKey;
+
+                vTextBlog.setText(mBlogData.sArtist);
+                if (!TextUtils.isEmpty(mBlogData.thProfile)) {
+                    // ImageLoader.getInstance().displayImage(mBlogData.sIMGPath, vImgBlog);
+                    Picasso.with(CreateMusicContentActivity.this).load(mBlogData.thProfile).placeholder(R.drawable.ic_empty).error(R.drawable.ic_error).fit().into(vImgBlog);
+                }
+            }
+        });
 
         vGruop.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -120,6 +182,7 @@ public class CreateMusicContentActivity extends AppCompatActivity implements Vie
 
         mCreateData =(ContentMusicData) (getIntent().getSerializableExtra(DefineContentType.BUNDLE_DATA_REQUEST));
         setBlogs();
+
         sPath = mCreateData.sMusicPath;
         vForeground.setVisibility(View.VISIBLE);
         playerManager = MusicManager.getMusicManager();
@@ -138,11 +201,35 @@ public class CreateMusicContentActivity extends AppCompatActivity implements Vie
     }
 
     private void setBlogs(){
-        popupSelectBlog = new PopupSelectBlog(this);
-        mCreateData.sBlogKey = PropertyManager.getInstance().mUser.sBlogKey;
-        mCreateData.mUserData.sArtist = PropertyManager.getInstance().mUser.sArtist;
-        Picasso.with(this).load(R.drawable.emo_happy_).placeholder(R.drawable.ic_empty).error(R.drawable.ic_error).fit().into(vImgBlog);
-        vTextBlog.setText(PropertyManager.getInstance().mUser.sArtist);
+
+        MyBlogInfoListRequest request = new MyBlogInfoListRequest();
+        request.setURL(DefineNetwork.MY_BLOG_INFO_LIST);
+
+        MyBlogController.getInstance().getMyBlogInfoList(request, new NetworkProcess.OnResultListener<BlogInfoListResult>() {
+            @Override
+            public void onSuccess(NetworkRequest<BlogInfoListResult> request, BlogInfoListResult result) {
+                //popupSelectBlog.setData(result.arrBlogs);
+                mAdapter.addList(result.arrBlogs);
+                for (BlogInfo blog : result.arrBlogs) {
+                    if (blog.isActivated) {
+                        mCreateData.sBlogKey = blog.sBlogKey;
+                        mCreateData.mUserData.sArtist = blog.sArtist;
+                        Picasso.with(CreateMusicContentActivity.this).load(blog.thProfile).placeholder(R.drawable.ic_empty).error(R.drawable.ic_error).fit().into(vImgBlog);
+                        vTextBlog.setText(blog.sArtist);
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onFail(NetworkRequest<BlogInfoListResult> request, int code) {
+                mCreateData.sBlogKey = PropertyManager.getInstance().mUser.sActiveBlogKey;
+                //Picasso.with(CreateImageContentActivity.this).load(R.drawable.backsample).placeholder(R.drawable.ic_empty).error(R.drawable.ic_error).fit().into(vImgBlog);
+                //vTextBlog.setText("");
+                Toast.makeText(CreateMusicContentActivity.this, "블로그 정보를 불러오는데 실패 하였습니다. 현재 활동 중인 블로그에 글이 게시 됩니다. -" + code, Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     @Override
@@ -163,12 +250,12 @@ public class CreateMusicContentActivity extends AppCompatActivity implements Vie
                 }
                 break;
             }
-            case R.id.layout_select_blog:
+          /*  case R.id.layout_select_blog:
             case R.id.img_create_selected_blog:
             case R.id.text_create_selected_blog: {
                 onPopupSelectBlog(findViewById(R.id.layout_select_blog));
                 break;
-            }
+            }*/
         }
     }
 
@@ -214,6 +301,7 @@ public class CreateMusicContentActivity extends AppCompatActivity implements Vie
 
                 POSTMusicContentRequest request = new POSTMusicContentRequest();
                 request.setData(mCreateData);
+                request.setURL(DefineNetwork.CONTENT);
                 ArtController.getInstance().putFilePOST(request, new NetworkProcess.OnResultListener<String>() {
                     @Override
                     public void onSuccess(NetworkRequest<String> request, String result) {
@@ -228,7 +316,19 @@ public class CreateMusicContentActivity extends AppCompatActivity implements Vie
 
                     @Override
                     public void onFail(NetworkRequest<String> request, int code) {
-                        Toast.makeText(CreateMusicContentActivity.this, DefineNetwork.RESULT_FAIL, Toast.LENGTH_SHORT).show();
+                        AlertDialog.Builder builder = new AlertDialog.Builder(CreateMusicContentActivity.this);
+                        builder.setIcon(android.R.drawable.ic_dialog_alert);
+                        builder.setTitle("업로드에 실패 하였습니다. 네트워크 연결 확인 후 다시 시도해 주십시오.");
+                        builder.setNeutralButton("네", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                MusicChoiceActivity.musicChoiceActivity.finish();
+                                MediaSingleChoiceActivity.mediaSingleChoiceActivity.finish();
+                                finish();
+                            }
+                        });
+                        builder.setCancelable(false);
+                        builder.create().show();
                     }
                 });
                 break;
@@ -270,10 +370,12 @@ public class CreateMusicContentActivity extends AppCompatActivity implements Vie
 
     @Override
     public void onBackPressed() {
-        if (null != popupSelectBlog && popupSelectBlog.isShowing()) {
+       /* if (null != popupSelectBlog && popupSelectBlog.isShowing()) {
             popupSelectBlog.dismiss();
         } else {
             super.onBackPressed();
-        }
+        }*/
+
+        super.onBackPressed();
     }
 }

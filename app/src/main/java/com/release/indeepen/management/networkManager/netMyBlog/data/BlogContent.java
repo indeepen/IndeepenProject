@@ -19,4 +19,7 @@ public class BlogContent {
     @SerializedName("work")
     public Work mWork;
 
+    @SerializedName("youTube")
+    public String sYouTubePath;
+
 }

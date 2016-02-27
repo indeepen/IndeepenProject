@@ -48,8 +48,8 @@ public class PropertyManager {
     public static final String KEY_ID = "id";
     public static final String KEY_PASSWORD = "password";
     public static final String KEY_NAME = "name";
-    public static final String KEY_NICKNAME = "name";
-
+    public static final String KEY_NICKNAME = "nick";
+    public static final String KEY_ACCOUNT_NAME = "youtubeAccount";
     public void setId(String id) {
         mEditor.putString(KEY_ID, id);
         mEditor.commit();
@@ -74,6 +74,15 @@ public class PropertyManager {
     }
     public void setNickName(String nickname){
         mEditor.putString(KEY_NICKNAME, nickname);
+        mEditor.commit();
+    }
+
+    public String getChosenAccountName() {
+        return mPrefs.getString(KEY_ACCOUNT_NAME, "");
+    }
+
+    public void setChosenAccountName(String name){
+        mEditor.putString(KEY_ACCOUNT_NAME, name);
         mEditor.commit();
     }
 

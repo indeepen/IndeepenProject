@@ -28,7 +28,6 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.release.indeepen.DefineContentType;
 import com.release.indeepen.DefineNetwork;
 import com.release.indeepen.R;
@@ -92,7 +91,7 @@ public class MediaSingleChoiceActivity extends AppCompatActivity implements Load
 
                     Picasso.with(MediaSingleChoiceActivity.this)
                             .load(new File(path))// optional
-                            .fit()                       // optional
+                            .fit().centerCrop()                        // optional
                             .into(iv);
                     return true;
                 }

@@ -14,13 +14,16 @@ import android.widget.Toast;
 
 import com.release.indeepen.DefineNetwork;
 import com.release.indeepen.R;
+import com.release.indeepen.content.ContentData;
 import com.release.indeepen.login.PropertyManager;
 import com.release.indeepen.management.networkManager.NetworkProcess;
 import com.release.indeepen.management.networkManager.NetworkRequest;
+import com.release.indeepen.management.networkManager.netArt.data.Writer;
 import com.release.indeepen.management.networkManager.netComment.CommentController;
 import com.release.indeepen.management.networkManager.netComment.CommentListRequest;
 import com.release.indeepen.management.networkManager.netComment.data.CommentResult;
 import com.release.indeepen.management.networkManager.netComment.POSTCommentRequest;
+import com.release.indeepen.management.networkManager.netComment.data.Comments;
 
 
 public class CommentActivity extends AppCompatActivity {
@@ -30,6 +33,7 @@ public class CommentActivity extends AppCompatActivity {
     String sContentKey;
     boolean isLastItem;
     boolean isStart;
+    ContentData mData;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +62,15 @@ public class CommentActivity extends AppCompatActivity {
                     CommentController.getInstance().postComment(request, new NetworkProcess.OnResultListener<String>() {
                         @Override
                         public void onSuccess(NetworkRequest<String> request, String result) {
+                            //댓글 수정
+                            /*Comments comments = new Comments();
+                            comments.sComm = input_text.getText().toString();
+                            Writer writer = new Writer();
+                            writer.sArtist = PropertyManager.getInstance().mUser.sArtist;
+                            comments.mWriter =*/
+                             mData.nCommentCount+=1;
+
+                            input_text.setText("");
                             Toast.makeText(CommentActivity.this, "등록 되었습니다.", Toast.LENGTH_SHORT).show();
                             isStart = true;
                             getMoreItem();
@@ -112,16 +125,17 @@ public class CommentActivity extends AppCompatActivity {
         if(!TextUtils.isEmpty(sContentKey)){
             CommentListRequest request = new CommentListRequest();
             if(isStart){
-                request.setURL(DefineNetwork.COMMENT_LIST.replace("*", sContentKey));
+                request.setURL(String.format(DefineNetwork.COMMENT_LIST, sContentKey));
 
             }else {
-                request.setURL(DefineNetwork.COMMENT_LIST_MORE.replace("*", sContentKey));
+                request.setURL(String.format(DefineNetwork.COMMENT_LIST_MORE, sContentKey));
             }
 
             CommentController.getInstance().getCommentList(request, new NetworkProcess.OnResultListener<CommentResult>() {
                 @Override
                 public void onSuccess(NetworkRequest<CommentResult> request, CommentResult result) {
-                    input_text.setText("");
+
+
                     if(isStart){
                         if(0 < mCommentAdapter.getCount()){
                             mCommentAdapter.clear();
@@ -143,6 +157,7 @@ public class CommentActivity extends AppCompatActivity {
 
     private void initData() {
         sContentKey = getIntent().getStringExtra(DefineNetwork.CONTENT_KEY);
+        mData = (ContentData) getIntent().getSerializableExtra(DefineNetwork.CONTENT_DATA);
         getMoreItem();
 
 

@@ -1,15 +1,14 @@
 package com.release.indeepen.create;
 
 import android.content.Context;
-import android.net.Uri;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.release.indeepen.R;
+import com.release.indeepen.management.networkManager.netMyBlog.data.BlogInfo;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -35,14 +34,11 @@ public class CreateChoiceBlogView extends LinearLayout{
         vImgBlog =(ImageView) findViewById(R.id.img_create_choice_blog);
     }
 
-    public void setData(BlogData data){
-        vTextBlog.setText(data.sName);
+    public void setData(BlogInfo data){
+        vTextBlog.setText(data.sArtist);
 
-        if(!TextUtils.isEmpty(data.sIMGPath)) {
-            //Uri uri = Uri.fromFile(new File(data.sIMGPath));
-            Uri uri = Uri.parse(data.sIMGPath);
-            //ImageLoader.getInstance().displayImage(uri.toString(), vImgBlog);
-            Picasso.with(getContext()).load(data.sIMGPath).placeholder(R.drawable.ic_empty).error(R.drawable.ic_error).fit().into(vImgBlog);
+        if(!TextUtils.isEmpty(data.thProfile)) {
+            Picasso.with(getContext()).load(data.thProfile).placeholder(R.drawable.ic_empty).error(R.drawable.ic_error).fit().into(vImgBlog);
         }
     }
 }

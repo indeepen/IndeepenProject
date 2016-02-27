@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
 import com.release.indeepen.R;
 
@@ -26,7 +27,7 @@ public class OptionPopupWindow extends PopupWindow{
 
 
     public interface OptionClickListener{
-        void onClickEvent(int mode);
+        void onOptionClickEvent(int mode);
     }
 
     OptionClickListener mListener;
@@ -39,7 +40,6 @@ public class OptionPopupWindow extends PopupWindow{
         super(context);
         mContext = context;
         final View view = LayoutInflater.from(context).inflate(R.layout.popup_option, null);
-
 
         btn = (Button)view.findViewById(R.id.btn_dislike);
         btn.setOnClickListener(new View.OnClickListener() {
@@ -60,13 +60,14 @@ public class OptionPopupWindow extends PopupWindow{
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //Toast.makeText(mContext, "넌 신고", Toast.LENGTH_SHORT).show();
-                        if(null != mListener){
-                            mListener.onClickEvent(UNLIKE);
+                        if (null != mListener) {
+                            mListener.onOptionClickEvent(UNLIKE);
                         }
                     }
                 });
                 builder.setCancelable(false);
                 builder.create().show();
+                dismiss();
             }
         });
 
@@ -74,10 +75,11 @@ public class OptionPopupWindow extends PopupWindow{
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Toast.makeText(mContext, "공유하기", Toast.LENGTH_SHORT).show();
-                if(null != mListener){
-                    mListener.onClickEvent(SHARE);
-                }
+                Toast.makeText(mContext, "공유하기", Toast.LENGTH_SHORT).show();
+                dismiss();
+                /*if(null != mListener){
+                    mListener.onOptionClickEvent(SHARE);
+                }*/
             }
         });
 
@@ -85,10 +87,11 @@ public class OptionPopupWindow extends PopupWindow{
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Toast.makeText(mContext, "수정하기", Toast.LENGTH_SHORT).show();
-                if(null != mListener){
-                    mListener.onClickEvent(EDIT);
-                }
+                Toast.makeText(mContext, "수정하기", Toast.LENGTH_SHORT).show();
+                dismiss();
+               /* if(null != mListener){
+                    mListener.onOptionClickEvent(EDIT);
+                }*/
             }
         });
 
@@ -104,19 +107,21 @@ public class OptionPopupWindow extends PopupWindow{
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //Toast.makeText(mContext, "봐줌", Toast.LENGTH_SHORT).show();
-
+                        dismiss();
                     }
                 });
                 builder.setNeutralButton("삭제", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if(null != mListener){
-                            mListener.onClickEvent(DELETE);
+                        if (null != mListener) {
+                            mListener.onOptionClickEvent(DELETE);
+                            dismiss();
                         }
                     }
                 });
                 builder.setCancelable(false);
                 builder.create().show();
+
             }
         });
 

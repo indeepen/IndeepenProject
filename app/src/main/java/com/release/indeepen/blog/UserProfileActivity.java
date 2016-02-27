@@ -50,12 +50,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
         vInputArtist.setKeyListener(null);
 
-        vIMGPublic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onSetPublic(vIMGPublic);
-            }
-        });
+
 
         init();
 
@@ -65,6 +60,14 @@ public class UserProfileActivity extends AppCompatActivity {
         isMe = getIntent().getBooleanExtra(DefineContentType.IS_ME, false);
         if(isMe){
             setEdit();
+            vIMGPublic.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onSetPublic(vIMGPublic);
+                }
+            });
+        }else{
+            vIMGPublic.setClickable(false);
         }
         getData();
 
@@ -81,32 +84,33 @@ public class UserProfileActivity extends AppCompatActivity {
                // mUserData = result.mUserProfile.mUserData;
                 mUserData = result.mUserProfile;
                 setData(mUserData);
-                Toast.makeText(UserProfileActivity.this, "수정이 완료 되었습니다.", Toast.LENGTH_SHORT).show();
+
             }
 
             @Override
             public void onFail(NetworkRequest<UserProfileResult> request, int code) {
-                Toast.makeText(UserProfileActivity.this, "수정에 실패하였습니다. 잠시 후 다시 시도해 주세요.", Toast.LENGTH_SHORT).show();
+
             }
         });
     }
 
     private void setData(UserData data) {
         vInputArtist.setText(data.sArtist);
-        vInputIntro.setText(data.sArtist);
+        vInputIntro.setText(data.sIntrodution);
 
+        vInputPhone.setHint("");
+        vInputIntro.setHint("");
         if (data.isPublic) {
-            vIMGPublic.setImageResource(R.drawable.emo_happy);
-        } else{
-            vIMGPublic.setImageResource(R.drawable.emo_angry);
-        }
+                vIMGPublic.setImageResource(R.drawable.selector_blog_open);
+            } else{
+                vIMGPublic.setImageResource(R.drawable.selector_blog_closed);
+            }
 
         if (data.isPublic || isMe) {
             vInputUserName.setText(data.sName);
             vInputPhone.setText(data.sPhoneNum);
             vInputEmail.setText(data.sEmail);
             vInputIntro.setText(data.sIntrodution);
-
 
         } else if(!data.isPublic){
 
@@ -137,8 +141,11 @@ public class UserProfileActivity extends AppCompatActivity {
         popup.vBtnPublic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                vIMGPublic.setImageResource(R.drawable.emo_happy);
+                // vIMGPublic.setSelected(!vIMGPublic.isSelected());
+                vIMGPublic.setSelected(true);
+                vIMGPublic.setImageResource(R.drawable.selector_blog_open);
                 popup.dismiss();
+
                 mUserData.isPublic = true;
             }
         });
@@ -146,12 +153,16 @@ public class UserProfileActivity extends AppCompatActivity {
         popup.vBtnPrivate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                vIMGPublic.setImageResource(R.drawable.emo_angry);
+                //vIMGPublic.setSelected(!vIMGPublic.isSelected());
+                vIMGPublic.setSelected(true);
+                vIMGPublic.setImageResource(R.drawable.selector_blog_closed);
                 popup.dismiss();
+
                 mUserData.isPublic = false;
             }
         });
 
+        vIMGPublic.setSelected(false);
 
     }
 
@@ -188,11 +199,12 @@ public class UserProfileActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(NetworkRequest<String> request, String result) {
                         getData();
+                        Toast.makeText(UserProfileActivity.this, "수정이 완료 되었습니다.", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onFail(NetworkRequest<String> request, int code) {
-
+                        Toast.makeText(UserProfileActivity.this, "잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                     }
                 });
                 break;

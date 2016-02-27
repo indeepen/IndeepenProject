@@ -4,6 +4,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import com.release.indeepen.management.networkManager.netMyBlog.data.BlogInfo;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,10 +14,15 @@ import java.util.List;
  */
 public class BlogListAdapter extends BaseAdapter {
 
-    List<BlogData> items = new ArrayList<BlogData>();
+    List<BlogInfo> items = new ArrayList<BlogInfo>();
 
-    public void add(BlogData data){
+    public void add(BlogInfo data){
         items.add(data);
+        notifyDataSetChanged();
+    }
+
+    public void addList(List<BlogInfo> list){
+        items.addAll(list);
         notifyDataSetChanged();
     }
 
@@ -40,7 +47,7 @@ public class BlogListAdapter extends BaseAdapter {
         if(null == view){
             view = new CreateChoiceBlogView(parent.getContext());
         }
-        view.setData((BlogData)getItem(position));
+        view.setData((BlogInfo)getItem(position));
         return view;
     }
 }

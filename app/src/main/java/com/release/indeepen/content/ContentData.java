@@ -14,7 +14,7 @@ public class ContentData implements Serializable {
     public String sBlogKey;
     public int nBlogType;
     public String sContentKey;
-    public String thIMG;
+    public String sThumb;
     public int nEmotion;
     public int nArtType;
     public String sWriteDate;

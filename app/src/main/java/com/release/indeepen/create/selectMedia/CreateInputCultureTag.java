@@ -1,4 +1,4 @@
-package com.release.indeepen.create;
+package com.release.indeepen.create.selectMedia;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;

@@ -41,9 +41,9 @@ public class PopupSelectBlog extends PopupWindow {
         data.sName =  PropertyManager.getInstance().mUser.sArtist;
         data.sBlogkey = PropertyManager.getInstance().mUser.sBlogKey;
         data.sIMGPath = "drawable://" + R.drawable.emo_sad;
-        mAdapter.add(data);
+        //mAdapter.add(data);
 
-        if( null != PropertyManager.getInstance().mUser.arrSpaceKeys||0 < PropertyManager.getInstance().mUser.arrSpaceKeys.size()) {
+      /*  if( null != PropertyManager.getInstance().mUser.arrSpaceKeys||0 < PropertyManager.getInstance().mUser.arrSpaceKeys.size()) {
             for (int idx = 0; idx < PropertyManager.getInstance().mUser.arrSpaceKeys.size(); idx++) {
                 data = new BlogData();
                 data.sName = "블로그" + idx;
@@ -51,7 +51,7 @@ public class PopupSelectBlog extends PopupWindow {
                 data.sBlogkey = "adgadgds" + idx;
                 mAdapter.add(data);
             }
-        }
+        }*/
     }
 
     public void setData(BlogData data){

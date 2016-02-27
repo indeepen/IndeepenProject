@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
@@ -17,16 +18,16 @@ import com.release.indeepen.R;
  */
 public class PublicPopupWindow extends PopupWindow{
     Context mContext;
-    public Button vBtnPublic, vBtnPrivate;
+    public ImageButton vBtnPublic, vBtnPrivate;
 
     public PublicPopupWindow(Context context) {
         super(context);
         mContext = context;
         final View view = LayoutInflater.from(context).inflate(R.layout.popup_public, null);
 
-        vBtnPublic = (Button)view.findViewById(R.id.btn_public);
+        vBtnPublic = (ImageButton)view.findViewById(R.id.btn_public);
 
-        vBtnPrivate = (Button)view.findViewById(R.id.btn_private);
+        vBtnPrivate = (ImageButton)view.findViewById(R.id.btn_private);
 
 
         setContentView(view);

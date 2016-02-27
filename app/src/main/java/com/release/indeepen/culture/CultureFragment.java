@@ -12,6 +12,9 @@ import com.release.indeepen.DefineContentType;
 import com.release.indeepen.MainActivity;
 import com.release.indeepen.MainTab;
 import com.release.indeepen.R;
+import com.release.indeepen.blog.BlogMainFragment;
+import com.release.indeepen.fan.FanMainFragment;
+import com.release.indeepen.space.SpaceFragment;
 
 import static com.release.indeepen.MainActivity.OnKeyBackPressedListener;
 
@@ -100,8 +103,48 @@ public class CultureFragment extends Fragment
                 ((CultureListFragment) culture).btn_date.setSelected(false);
                 isPop = true;
             }
+            if(((CultureListFragment) culture).closeOptionsPop()){
+                isPop = true;
+            }
+
 
         }
+        Fragment fan = mFM.findFragmentByTag( DefineContentType.FRAGMENT_TAG_FAN);
+        Fragment search = mFM.findFragmentByTag( DefineContentType.FRAGMENT_TAG_SEARCH);
+        Fragment blog = mFM.findFragmentByTag( DefineContentType.FRAGMENT_TAG_MY_BLOG);
+        Fragment space = mFM.findFragmentByTag( DefineContentType.FRAGMENT_TAG_SPACE);
+
+        if(null != space) {
+            if (null != ((SpaceFragment) space).popup_profile && ((SpaceFragment) space).popup_profile.isShowing()) {
+                ((SpaceFragment) space).popup_profile.dismiss();
+                isPop = true;
+            }
+        }
+
+        if(null != blog) {
+            if (null != ((BlogMainFragment) blog).popup_profile && ((BlogMainFragment) blog).popup_profile.isShowing()) {
+                ((BlogMainFragment) blog).popup_profile.dismiss();
+                isPop = true;
+            }
+        }
+        if(null != fan){
+            if(null != ((FanMainFragment) fan).emotion  && ((FanMainFragment) fan).emotion.isShowing()){
+                ((FanMainFragment) fan).emotion.dismiss();
+                if(((FanMainFragment) fan).nEmotion == -2){
+                    ((FanMainFragment) fan).vBtnEmo.setSelected(false);
+                }
+                isPop =true;
+            }
+            if(null != ((FanMainFragment) fan).category  &&((FanMainFragment) fan).category.isShowing()){
+                ((FanMainFragment) fan).category.dismiss();
+                if(((FanMainFragment) fan).nCategory == -2){
+                    ((FanMainFragment) fan).vBtnCategory.setSelected(false);
+                }
+                isPop =true;
+            }
+
+        }
+
 
         if (false == isPop) {
             if (((MainActivity) getActivity()).getOnKeyBackPressedListener() instanceof CultureFragment) {

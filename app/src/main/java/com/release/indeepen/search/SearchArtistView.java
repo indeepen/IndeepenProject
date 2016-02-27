@@ -6,10 +6,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.release.indeepen.R;
 import com.release.indeepen.management.networkManager.netMyBlog.data.BlogInfo;
-import com.release.indeepen.management.networkManager.netSearch.data.HashTagResult;
 import com.squareup.picasso.Picasso;
 
 /**

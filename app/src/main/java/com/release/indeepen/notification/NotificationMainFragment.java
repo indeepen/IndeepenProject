@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.release.indeepen.DefineContentType;
 import com.release.indeepen.MainActivity;
@@ -42,7 +43,7 @@ public class NotificationMainFragment extends Fragment {
         mNotiAdapter = new NotiAdapter();
         vNotiList.setAdapter(mNotiAdapter);
 
-        vNotiList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+       /* vNotiList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //if (CallbackListener.mFragnetListener instanceof NotificationFragment) {
@@ -89,7 +90,7 @@ public class NotificationMainFragment extends Fragment {
                     }
                 }
             }
-        });
+        });*/
 
         init();
         return view;
@@ -102,8 +103,9 @@ public class NotificationMainFragment extends Fragment {
             PushData mData = new PushData();
             mData.nPushType = 1;
             mData.nContentType = DefineContentType.SINGLE_ART_TYPE_PICTURE;
-            //mData.thProfile = DefineTest.ARR_IMG[idx];
-            mData.sMSG = idx + "";
+
+            mData.thProfile = "https://s3-ap-northeast-1.amazonaws.com/indeepen-s3/images/profiles/icon-person.jpg";
+            mData.sMSG = "알림메시지";
             mNotiAdapter.add(mData);
         }
     }

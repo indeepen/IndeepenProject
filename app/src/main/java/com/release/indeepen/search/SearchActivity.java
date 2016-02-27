@@ -7,7 +7,10 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TabHost;
 
 import com.release.indeepen.DefineContentType;
@@ -22,6 +25,10 @@ public class SearchActivity extends AppCompatActivity {
     SearchView vSearchView;
     EditText vInputkeyword;
     String keyWord;
+    View all, tag, artist, space;
+    ImageView tab_image;
+    ImageButton btnSearch;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,29 +36,43 @@ public class SearchActivity extends AppCompatActivity {
 
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar_search));
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         tabHost = (TabHost) findViewById(R.id.tabHost);
         tabHost.setup();
         pager = (ViewPager) findViewById(R.id.pager);
         mAdapter = new TabsAdapter(this, getSupportFragmentManager(), tabHost, pager);
 
-        vSearchView = (SearchView) findViewById(R.id.view_search);
+        vSearchView = (SearchView) ((Toolbar) findViewById(R.id.toolbar_search)).findViewById(R.id.view_search);
         vInputkeyword = (EditText) vSearchView.findViewById(R.id.input_search);
+        btnSearch = (ImageButton) vSearchView.findViewById(R.id.btn_search);
+
+        all = getLayoutInflater().inflate(R.layout.view_image, null);
+        tag = getLayoutInflater().inflate(R.layout.view_image, null);
+        artist = getLayoutInflater().inflate(R.layout.view_image, null);
+        space = getLayoutInflater().inflate(R.layout.view_image, null);
+
+        tab_image = (ImageView) all.findViewById(R.id.tab_image);
+        tab_image.setBackgroundResource(R.drawable.search_navi_all);
+        tab_image = (ImageView) tag.findViewById(R.id.tab_image);
+        tab_image.setBackgroundResource(R.drawable.search_navi_tag);
+        tab_image = (ImageView) artist.findViewById(R.id.tab_image);
+        tab_image.setBackgroundResource(R.drawable.search_navi_artist);
+        tab_image = (ImageView) space.findViewById(R.id.tab_image);
+        tab_image.setBackgroundResource(R.drawable.search_navi_space);
+
 
         Bundle bundle = new Bundle();
         bundle.putInt(DefineNetwork.REQUEST_TYPE, DefineNetwork.TYPE_SEARCH_ALL);
-        mAdapter.addTab(tabHost.newTabSpec(DefineContentType.SEARCH_TAB_ALL).setIndicator(DefineContentType.SEARCH_TAB_ALL), SearchListFragment.class, bundle);
+        mAdapter.addTab(tabHost.newTabSpec(DefineContentType.SEARCH_TAB_ALL).setIndicator(all), SearchListFragment.class, bundle);
         bundle = new Bundle();
         bundle.putInt(DefineNetwork.REQUEST_TYPE, DefineNetwork.TYPE_SEARCH_HASHTAG);
-        mAdapter.addTab(tabHost.newTabSpec(DefineContentType.SEARCH_TAB_TAG).setIndicator(DefineContentType.SEARCH_TAB_TAG), SearchListFragment.class, bundle);
+        mAdapter.addTab(tabHost.newTabSpec(DefineContentType.SEARCH_TAB_TAG).setIndicator(tag), SearchListFragment.class, bundle);
         bundle = new Bundle();
         bundle.putInt(DefineNetwork.REQUEST_TYPE, DefineNetwork.TYPE_SEARCH_ARTIST);
-        mAdapter.addTab(tabHost.newTabSpec(DefineContentType.SEARCH_TAB_ARTIST).setIndicator(DefineContentType.SEARCH_TAB_ARTIST), SearchListFragment.class, bundle);
+        mAdapter.addTab(tabHost.newTabSpec(DefineContentType.SEARCH_TAB_ARTIST).setIndicator(artist), SearchListFragment.class, bundle);
         bundle = new Bundle();
         bundle.putInt(DefineNetwork.REQUEST_TYPE, DefineNetwork.TYPE_SEARCH_SPACE);
-        mAdapter.addTab(tabHost.newTabSpec(DefineContentType.SEARCH_TAB_SPACE).setIndicator(DefineContentType.SEARCH_TAB_SPACE), SearchListFragment.class, bundle);
-
+        mAdapter.addTab(tabHost.newTabSpec(DefineContentType.SEARCH_TAB_SPACE).setIndicator(space), SearchListFragment.class, bundle);
 
         vInputkeyword.addTextChangedListener(new TextWatcher() {
             @Override
@@ -70,6 +91,15 @@ public class SearchActivity extends AppCompatActivity {
 
             }
         });
+
+        btnSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                vInputkeyword.setText(null);
+                vInputkeyword.setHint("검색");
+            }
+        });
+
 
         mAdapter.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             @Override

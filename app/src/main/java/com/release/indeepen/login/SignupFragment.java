@@ -103,14 +103,13 @@ public class SignupFragment extends Fragment {
                                     builder.setNeutralButton("확인", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            email.setSelectAllOnFocus(true);
-                                            email.setCursorVisible(true);
+                                            startActivity(new Intent(getContext(), MainActivity.class));
+                                            getActivity().finish();
                                         }
                                     });
                                     builder.setCancelable(false);
                                     builder.create().show();
-                                    startActivity(new Intent(getContext(), MainActivity.class));
-                                    getActivity().finish();
+
                                 }
 
                                 @Override
@@ -120,8 +119,7 @@ public class SignupFragment extends Fragment {
                                     builder.setNeutralButton("확인", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            email.setSelectAllOnFocus(true);
-                                            email.setCursorVisible(true);
+
                                         }
                                     });
                                     builder.setCancelable(false);

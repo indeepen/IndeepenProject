@@ -8,6 +8,7 @@ import com.release.indeepen.user.UserData;
  */
 public class ContentMusicData  extends ContentData {
     public String sMusicBackIMG;
+    public String sMusicBackThumb;
     public String sMusicPath;
     public ContentMusicData(){
         mUserData = new UserData();

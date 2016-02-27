@@ -9,6 +9,9 @@ public class Resources{
     @SerializedName("type")
     public String sFileType;
 
+    @SerializedName("thumbnailPath")
+    public String sThumb;
+
     @SerializedName("originalPath")
     public String sPath;
 

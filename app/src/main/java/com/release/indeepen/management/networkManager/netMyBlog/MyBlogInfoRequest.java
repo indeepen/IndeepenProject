@@ -3,9 +3,7 @@ package com.release.indeepen.management.networkManager.netMyBlog;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.release.indeepen.DefineNetwork;
-import com.release.indeepen.content.ContentData;
 import com.release.indeepen.management.networkManager.NetworkRequest;
-import com.release.indeepen.management.networkManager.netArt.data.ContentResult;
 import com.release.indeepen.management.networkManager.netMyBlog.data.BlogInfoResult;
 
 import java.io.IOException;

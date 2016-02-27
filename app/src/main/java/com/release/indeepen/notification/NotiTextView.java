@@ -7,6 +7,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.release.indeepen.R;
+import com.squareup.picasso.Picasso;
 
 /**
  * Created by lyo on 2015-10-31.
@@ -36,6 +37,7 @@ public class NotiTextView extends RelativeLayout {
         vTextMSG = (TextView) findViewById(R.id.text_push_text_msg);
 
         if (null != data) {
+            Picasso.with(getContext()).load(data.thProfile).placeholder(R.drawable.ic_empty).error(R.drawable.ic_error).fit().into(vIMGPro);
             //vIMGPro.setImageResource(data.thProfile);
             vTextMSG.setText(data.sMSG);
         }

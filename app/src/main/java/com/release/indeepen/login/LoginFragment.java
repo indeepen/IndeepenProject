@@ -54,7 +54,7 @@ public class LoginFragment extends Fragment {
     String mFacebookEmail;
     LoginManager mLoginManager;
     ImageButton facebook;
-    boolean isFill = false;
+    boolean isFill = true;
     AccessTokenTracker tracker;
 
 
@@ -69,12 +69,10 @@ public class LoginFragment extends Fragment {
         email = (EditText) view.findViewById(R.id.text_email);
         pw = (EditText) view.findViewById(R.id.text_pw);
 //test
-        email.setText("dldufma@naver.com");
-        pw.setText("1234");
-        PropertyManager.getInstance().mUser.sArtist = "이여름";
+
         //  manager.registerCallback(callbackManager,  new FacebookCallback<LoginResult>() {
 
-        final LoginButton btn_facebook = (LoginButton) view.findViewById(R.id.btn_facebook_login);
+      /*  final LoginButton btn_facebook = (LoginButton) view.findViewById(R.id.btn_facebook_login);
         btn_facebook.setFragment(this);
         btn_facebook.setReadPermissions("email");
 
@@ -139,15 +137,28 @@ public class LoginFragment extends Fragment {
             }
         });
 
-
+*/
         btn_login = (ImageButton) view.findViewById(R.id.btn_login);
         //btn_login.setEnabled(false);
+/*
+        if(!TextUtils.isEmpty(PropertyManager.getInstance().getId()) && !TextUtils.isEmpty(PropertyManager.getInstance().getPassword())){
+            email.setText(PropertyManager.getInstance().getId());
+            pw.setText(PropertyManager.getInstance().getPassword());
+            netLogin();
+        }
+*/
 
+      /*  email.setText("indeepen18@gmail.com");
+        pw.setText("1234");*/
+        //PropertyManager.getInstance().mUser.sArtist = "이여름";
         btn_login.setOnClickListener(new View.OnClickListener() {
                                          @Override
                                          public void onClick(View v) {
+                                             netLogin();
+                                             /*startActivity(new Intent(getContext(), MainActivity.class));
+                                             getActivity().finish();*/
 
-                                             final String id = email.getText().toString();
+                                             /*final String id = email.getText().toString();
                                              final String password = pw.getText().toString();
                                              if(TextUtils.isEmpty(id)){
                                                  isFill = false;
@@ -209,11 +220,9 @@ public class LoginFragment extends Fragment {
                                                          builder.create().show();
                                                      }
                                                  });
-                                             }
+                                             }*/
                                          }
                                      }
-
-
         );
 
         facebook = (ImageButton) view.findViewById(R.id.facebook_login);
@@ -224,7 +233,7 @@ public class LoginFragment extends Fragment {
             public void onClick(View v) {
                 if (!isLogin()) {
                     login(null);
-
+                    mode = MODE_PROFILE;
                 } else {
                     mLoginManager.logOut();
                 }
@@ -238,6 +247,76 @@ public class LoginFragment extends Fragment {
         };
 
         return view;
+    }
+
+    private void netLogin(){
+        final String id = email.getText().toString();
+        final String password = pw.getText().toString();
+        if(TextUtils.isEmpty(id)){
+            isFill = false;
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setMessage("아이디를 입력해 주세요.");
+
+            builder.setNeutralButton("확인", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+            builder.setCancelable(false);
+            builder.create().show();
+        }
+        else if(TextUtils.isEmpty(password)){
+            isFill = false;
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setMessage("비밀번호를 입력해 주세요.");
+
+            builder.setNeutralButton("확인", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+            builder.setCancelable(false);
+            builder.create().show();
+        }
+        if(isFill) {
+            POSTLoginRequest request = new POSTLoginRequest();
+            request.setURL(DefineNetwork.LOGIN);
+            request.setData(id, password);
+
+            LoginController.getInstance().login(request, new NetworkProcess.OnResultListener<IndeepenLoginResult>() {
+                @Override
+                public void onSuccess(NetworkRequest<IndeepenLoginResult> request, IndeepenLoginResult result) {
+                    Toast.makeText(getContext(), "로그인 되었습니다.", Toast.LENGTH_SHORT).show();
+
+                    PropertyManager.getInstance().setId(id);
+                    PropertyManager.getInstance().setPassword(password);
+
+                    PropertyManager.getInstance().mUser.sUserkey = result.result.userKey;
+                    PropertyManager.getInstance().mUser.sBlogKey = result.result.artistBlogKey;
+                    PropertyManager.getInstance().mUser.sActiveBlogKey = result.result.activityBlogKey;
+                    PropertyManager.getInstance().mUser.arrSpaceKeys = result.result.arrSpaceBlogKeys;
+                    startActivity(new Intent(getContext(), MainActivity.class));
+                    getActivity().finish();
+                }
+
+                @Override
+                public void onFail(NetworkRequest<IndeepenLoginResult> request, int code) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    //builder.setIcon(android.R.drawable.ic_dialog_alert);
+                    //builder.setTitle("Alert Dialog");
+                    builder.setMessage("로그인 정보를 다시 확인해 주세요");
+
+                    builder.setNeutralButton("확인", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(getContext(), "확인", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    builder.setCancelable(false);
+                    builder.create().show();
+                }
+            });
+        }
     }
 
     private void postMessage() {

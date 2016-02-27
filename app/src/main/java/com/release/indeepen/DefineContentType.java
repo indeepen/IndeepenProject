@@ -26,12 +26,18 @@ public interface DefineContentType {
     int TO_FAN_LIST = 8;
     int TO_CULTURE_TAB =10;
     int TO_CULTURE_LOCAL =11;
+    int TO_SEARCH_TRIPLE = 12;
 
 
     int FROM_BLOG = 9;
     int FROM_SEARCH = 10;
     int FROM_FAN = 11;
     int FROM_CULTURE =12;
+
+    //content change type
+    int DELETE =0;
+    int LIKE =1;
+    int COMMENT =2;
 
 
     String FRAGMENT_SINGLE_LIST = "singleList";
@@ -66,6 +72,8 @@ public interface DefineContentType {
 
     String FRAGMENT_TAG_SEARCH = "search";
     String FRAGMENT_TAG_FAN = "fan";
+    String FRAGMENT_TAG_MY_BLOG = "myBlog";
+    String FRAGMENT_TAG_SPACE = "space";
     String FRAGMENT_TAG_CULTURE = "culture";
     String FRAGMENT_TAG_CULTURE_LOCAL = "culture_local";
 
@@ -173,5 +181,14 @@ public interface DefineContentType {
     int EMO_LOVE = 2;
     int EMO_SAD = 3;
     int EMO_ANGRY = 4;
+
+    int CULTURE_EXHIBITION = 0;
+    int CULTURE_PERFORMANCE = 1;
+    int CULTURE_SHOW = 2;
+    int CULTURE_ART_MEETING = 3;
+    int CULTURE_FESTIVAL = 4;
+
+    String YOUTUBE_PATH = "YOUTUBE_PATH";
+
 
 }

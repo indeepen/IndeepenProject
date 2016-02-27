@@ -17,6 +17,8 @@ import com.release.indeepen.DefineContentType;
 import com.release.indeepen.DefineNetwork;
 import com.release.indeepen.MainActivity;
 import com.release.indeepen.R;
+import com.release.indeepen.content.OptionView;
+import com.release.indeepen.fan.FanMainFragment;
 import com.release.indeepen.login.PropertyManager;
 import com.release.indeepen.management.dateManager.DateManager;
 import com.release.indeepen.management.networkManager.NetworkProcess;
@@ -29,7 +31,7 @@ import com.squareup.picasso.Picasso;
 /**
  * Created by Lady on 2015. 11. 2..
  */
-public class CultureItemView extends LinearLayout implements View.OnClickListener , OptionPopupWindow.OptionClickListener{
+public class CultureItemView extends LinearLayout implements View.OnClickListener, OptionPopupWindow.OptionClickListener, OptionView {
 
     public CultureItemView(Context context) {
         super(context);
@@ -46,7 +48,7 @@ public class CultureItemView extends LinearLayout implements View.OnClickListene
     ImageView image_user, image_fee, image_ing, image_main, img_tag, img_like, img_option, divider;
     TextView text_username, text_uploadtime, text_title, text_date, text_time, text_address, text_comment, text_like;
     CultureItemData mData;
-
+    OptionPopupWindow popup;
 
     private void init() {
         inflate(getContext(), R.layout.view_list_culture, this);
@@ -106,7 +108,6 @@ public class CultureItemView extends LinearLayout implements View.OnClickListene
                 Intent mIntent = new Intent(getContext(), CultureDetailActivity.class);
                 mIntent.putExtra(DefineContentType.BUNDLE_DATA_REQUEST, mData.sContentKey);
                 getContext().startActivity(mIntent);
-                Toast.makeText(getContext(), "선택부분 click", Toast.LENGTH_SHORT).show();
                 break;
             }
             case R.id.btn_user:
@@ -115,9 +116,9 @@ public class CultureItemView extends LinearLayout implements View.OnClickListene
                 Intent mIntent = new Intent(getContext(), MainActivity.class);
                 mIntent.putExtra(DefineContentType.KEY_ON_NEW_REQUEST, DefineContentType.TYPE_ON_NEW_REPLACE);
                 mIntent.putExtra(DefineNetwork.BLOG_KEY, mData.sBlogKey);
-                if(DefineContentType.BLOG_TYPE_MYBLOG == mData.nBlogType) {
+                if (DefineContentType.BLOG_TYPE_MYBLOG == mData.nBlogType) {
                     mIntent.putExtra(DefineContentType.KEY_ON_NEW_WHERE, DefineContentType.TO_BLOG);
-                }else{
+                } else {
                     mIntent.putExtra(DefineContentType.KEY_ON_NEW_WHERE, DefineContentType.TO_SPACE);
                 }
                 getContext().startActivity(mIntent);
@@ -126,6 +127,7 @@ public class CultureItemView extends LinearLayout implements View.OnClickListene
             case R.id.comment: {
                 Intent mIntent = new Intent(getContext(), CommentActivity.class);
                 mIntent.putExtra(DefineNetwork.CONTENT_KEY, mData.sContentKey);
+                mIntent.putExtra(DefineNetwork.CONTENT_DATA, mData);
                 getContext().startActivity(mIntent);
                 break;
             }
@@ -138,7 +140,7 @@ public class CultureItemView extends LinearLayout implements View.OnClickListene
 
             case R.id.like:
             case R.id.img_like: {
-                if(img_like.isSelected()){
+                if (img_like.isSelected()) {
                     PUTLikeRequest request = new PUTLikeRequest();
                     request.setURL(String.format(DefineNetwork.LIKE, mData.sContentKey, "unlike"));
 
@@ -147,16 +149,23 @@ public class CultureItemView extends LinearLayout implements View.OnClickListene
                         public void onSuccess(NetworkRequest<String> request, String result) {
                             Toast.makeText(getContext(), "좋아요가 취소 되었습니다.", Toast.LENGTH_SHORT).show();
                             int nCount = Integer.parseInt(text_like.getText().toString());
-                            text_like.setText(nCount-1+"");
+                            text_like.setText(nCount - 1 + "");
+                            mData.nLikeCount -= 1;
+                            for (int idx = 0; idx < mData.arrLikes.size(); idx++) {
+                                if (PropertyManager.getInstance().mUser.sBlogKey.equals(mData.arrLikes.get(idx))) {
+                                    mData.arrLikes.remove(idx);
+                                    break;
+                                }
+                            }
                         }
 
                         @Override
                         public void onFail(NetworkRequest<String> request, int code) {
-                            Toast.makeText(getContext(), "잠시 후 다시 시도해 주세요. "+code, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "잠시 후 다시 시도해 주세요. " + code, Toast.LENGTH_SHORT).show();
                         }
                     });
 
-                }else{
+                } else {
                     PUTLikeRequest request = new PUTLikeRequest();
                     request.setURL(String.format(DefineNetwork.LIKE, mData.sContentKey, "like"));
 
@@ -166,11 +175,14 @@ public class CultureItemView extends LinearLayout implements View.OnClickListene
                             Toast.makeText(getContext(), "좋아요", Toast.LENGTH_SHORT).show();
                             int nCount = Integer.parseInt(text_like.getText().toString());
                             text_like.setText(nCount + 1 + "");
+                            mData.nLikeCount += 1;
+                            mData.arrLikes.add(PropertyManager.getInstance().mUser.sBlogKey);
+
                         }
 
                         @Override
                         public void onFail(NetworkRequest<String> request, int code) {
-                            Toast.makeText(getContext(), "잠시 후 다시 시도해 주세요. "+code, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "잠시 후 다시 시도해 주세요. " + code, Toast.LENGTH_SHORT).show();
                         }
                     });
 
@@ -183,34 +195,40 @@ public class CultureItemView extends LinearLayout implements View.OnClickListene
     }
 
 
-    public void setItemData(CultureItemData data) {
+    FanMainFragment mFanMainFragment;
+    int nPosition;
+
+    public void setItemData(CultureItemData data, FanMainFragment fanMainFragment, int position) {
         mData = data;
+        mFanMainFragment = fanMainFragment;
+        nPosition = position;
+        img_like.setSelected(false);
         String user = PropertyManager.getInstance().mUser.sBlogKey;
-        if(mData.arrLikes.contains(user)){
+        if (mData.arrLikes.contains(user)) {
             img_like.setSelected(true);
         }
 
         //ImageLoader.getInstance().displayImage(data.mUserData.thProfile, image_user);
         Picasso.with(getContext()).load(data.mUserData.thProfile).placeholder(R.drawable.ic_empty).error(R.drawable.ic_error).fit().into(image_user);
-        if(0 < data.arrIMGs.size()) {
-            Picasso.with(getContext()).load(data.arrIMGs.get(0)).placeholder(R.drawable.ic_empty).error(R.drawable.ic_error).resize(getContext().getResources().getDisplayMetrics().widthPixels,0).into(image_main);
-           // ImageLoader.getInstance().displayImage(data.arrIMGs.get(0), image_main);
+        if (0 < data.arrIMGs.size()) {
+            Picasso.with(getContext()).load(data.arrThumbs.get(0)).placeholder(R.drawable.ic_empty).error(R.drawable.ic_error).resize(getContext().getResources().getDisplayMetrics().widthPixels, 0).into(image_main);
+            // ImageLoader.getInstance().displayImage(data.arrIMGs.get(0), image_main);
         }
 
-        if(data.nFee > 0){
+        if (data.nFee > 0) {
             image_fee.setImageResource(R.drawable.fee_charged);
             //ImageLoader.getInstance().displayImage("drawable://" + R.drawable.fee_charged, image_fee);
-        }else{
+        } else {
             image_fee.setImageResource(R.drawable.fee_free);
             //ImageLoader.getInstance().displayImage("drawable://" + R.drawable.fee_free, image_fee);
         }
-        //if(DateManager.getInstance().isEnd(data.dEndDate+data.dEndTime)){
-        if(DateManager.getInstance().isEnd("2015.11.11 17:30")){ //test
+        if (DateManager.getInstance().isEnd(data.dEndDate + " " + data.dEndTime)) {
+            //if(DateManager.getInstance().isEnd("2015.11.11 17:30")){ //test
             image_ing.setImageResource(R.drawable.peformance_end);
-           // ImageLoader.getInstance().displayImage("drawable://" + R.drawable.peformance_end, image_ing);
-        }else{
+            // ImageLoader.getInstance().displayImage("drawable://" + R.drawable.peformance_end, image_ing);
+        } else {
             image_ing.setImageResource(R.drawable.performance_ing);
-           // ImageLoader.getInstance().displayImage("drawable://" + R.drawable.performance_ing, image_ing);
+            // ImageLoader.getInstance().displayImage("drawable://" + R.drawable.performance_ing, image_ing);
         }
 
         text_username.setText(data.mUserData.sArtist);
@@ -219,33 +237,86 @@ public class CultureItemView extends LinearLayout implements View.OnClickListene
         text_date.setText(data.dStartDate);
         text_time.setText(data.dStartTime);
         text_address.setText(data.sAddress);
-        text_comment.setText(data.nCommentCount+"");
-        text_like.setText(data.nLikeCount+"");
+        text_comment.setText(data.nCommentCount + "");
+        text_like.setText(data.nLikeCount + "");
 
 
+    }
+
+    CultureListFragment mCultureListFragment;
+
+    public void setItemData(CultureItemData data, CultureListFragment cultureListFragment, int position) {
+        mData = data;
+        mCultureListFragment = cultureListFragment;
+        nPosition = position;
+        img_like.setSelected(false);
+        String user = PropertyManager.getInstance().mUser.sBlogKey;
+        if (mData.arrLikes.contains(user)) {
+            img_like.setSelected(true);
+        }
+
+        //ImageLoader.getInstance().displayImage(data.mUserData.thProfile, image_user);
+        Picasso.with(getContext()).load(data.mUserData.thProfile).placeholder(R.drawable.ic_empty).error(R.drawable.ic_error).fit().into(image_user);
+        if (0 < data.arrIMGs.size()) {
+            Picasso.with(getContext()).load(data.arrThumbs.get(0)).placeholder(R.drawable.ic_empty).error(R.drawable.ic_error).resize(getContext().getResources().getDisplayMetrics().widthPixels, 0).into(image_main);
+            // ImageLoader.getInstance().displayImage(data.arrIMGs.get(0), image_main);
+        }
+
+        if (data.nFee > 0) {
+            image_fee.setImageResource(R.drawable.fee_charged);
+            //ImageLoader.getInstance().displayImage("drawable://" + R.drawable.fee_charged, image_fee);
+        } else {
+            image_fee.setImageResource(R.drawable.fee_free);
+            //ImageLoader.getInstance().displayImage("drawable://" + R.drawable.fee_free, image_fee);
+        }
+        if (DateManager.getInstance().isEnd(data.dEndDate + " " + data.dEndTime)) {
+            //if(DateManager.getInstance().isEnd("2015.11.11 17:30")){ //test
+            image_ing.setImageResource(R.drawable.peformance_end);
+            // ImageLoader.getInstance().displayImage("drawable://" + R.drawable.peformance_end, image_ing);
+        } else {
+            image_ing.setImageResource(R.drawable.performance_ing);
+            // ImageLoader.getInstance().displayImage("drawable://" + R.drawable.performance_ing, image_ing);
+        }
+
+        text_username.setText(data.mUserData.sArtist);
+        text_title.setText(data.sTitle);
+        text_uploadtime.setText(DateManager.getInstance().getPastTime(data.sWriteDate));
+        text_date.setText(data.dStartDate);
+        text_time.setText(data.dStartTime);
+        text_address.setText(data.sAddress);
+        text_comment.setText(data.nCommentCount + "");
+        text_like.setText(data.nLikeCount + "");
 
 
     }
 
     @Override
-    public void onClickEvent(int mode) {
-        switch (mode){
-            case OptionPopupWindow.UNLIKE:{
+    public void onOptionClickEvent(int mode) {
+        switch (mode) {
+            case OptionPopupWindow.UNLIKE: {
                 break;
             }
-            case OptionPopupWindow.SHARE:{
+            case OptionPopupWindow.SHARE: {
                 break;
             }
-            case OptionPopupWindow.EDIT:{
+            case OptionPopupWindow.EDIT: {
                 break;
             }
-            case OptionPopupWindow.DELETE:{
+            case OptionPopupWindow.DELETE: {
                 DELETEContentRequest request = new DELETEContentRequest();
                 request.setURL(String.format(DefineNetwork.DELETE_CONTENT, mData.sContentKey));
                 CommonController.getInstance().deleteContent(request, new NetworkProcess.OnResultListener<String>() {
                     @Override
                     public void onSuccess(NetworkRequest<String> request, String result) {
+                        //수정 목록에서도 사라져야함
                         Toast.makeText(getContext(), "삭제 되었습니다.", Toast.LENGTH_SHORT).show();
+                        if (mFanMainFragment != null) {
+                            mFanMainFragment.setChageData(DefineContentType.DELETE, nPosition, null);
+                        }
+                        if (mCultureListFragment != null) {
+                            mCultureListFragment.setChageData(DefineContentType.DELETE, nPosition, null);
+                        }
+
                     }
 
                     @Override
@@ -257,14 +328,24 @@ public class CultureItemView extends LinearLayout implements View.OnClickListene
             }
         }
     }
+
     private void onOptionPopupWindow(View view) {
-        OptionPopupWindow popup = new OptionPopupWindow(getContext());
+        popup = new OptionPopupWindow(getContext());
         popup.setOnOptionClick(this);
         popup.setOutsideTouchable(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             popup.showAsDropDown(comment, Gravity.RELATIVE_LAYOUT_DIRECTION, 16, 0);
         }
+        popup.setFocusable(true);
+        setFocusable(true);
     }
 
-
+    @Override
+    public boolean closePopup() {
+        if(null != popup && popup.isShowing()) {
+            popup.dismiss();
+            return true;
+        }
+        return false;
+    }
 }

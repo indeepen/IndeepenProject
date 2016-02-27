@@ -24,8 +24,8 @@ import java.util.ArrayList;
  */
 public class CalendarFragment extends Fragment {
     TextView titleView;
-    GridView gridView;
-    CalendarAdapter mAdapter;
+    public GridView gridView;
+    public CalendarAdapter mAdapter;
     Boolean nColor = false;
     Context mContext;
 
@@ -112,7 +112,7 @@ public class CalendarFragment extends Fragment {
         countNum=2;
 
         gridView.setAdapter(mAdapter);
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+       /* gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position,
@@ -137,7 +137,7 @@ public class CalendarFragment extends Fragment {
                     mAdapter.notifyDataSetChanged();
                 }
             }
-        });
+        });*/
 
 
 /*

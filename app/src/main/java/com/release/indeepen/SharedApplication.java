@@ -5,13 +5,7 @@ import android.content.Context;
 import android.support.multidex.MultiDex;
 
 import com.facebook.FacebookSdk;
-import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
-import com.nostra13.universalimageloader.core.download.HttpClientImageDownloader;
-import com.release.indeepen.management.networkManager.NetworkManager;
+
 
 /**
  * Created by lyo on 2015-11-02.
@@ -25,7 +19,7 @@ public class SharedApplication extends Application {
         return mContext;
     }
 
-    public static void initImageLoader(Context context) {
+  /*  public static void initImageLoader(Context context) {
         DisplayImageOptions options = new DisplayImageOptions.Builder()
                 .showImageOnLoading(R.drawable.ic_stub)
                 .showImageForEmptyUri(R.drawable.ic_empty)
@@ -46,7 +40,7 @@ public class SharedApplication extends Application {
         //.imageDownloader(new HttpClientImageDownloader(context, NetworkManager.getInstance().getExecutor()))
                 .build();
         ImageLoader.getInstance().init(config);
-    }
+    }*/
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -58,8 +52,13 @@ public class SharedApplication extends Application {
     public void onCreate() {
         super.onCreate();
         MultiDex.install(this);
-        initImageLoader(this);
+       /* initImageLoader(this);*/
         FacebookSdk.sdkInitialize(this);
         mContext = this;
-    }
+/*
+        FontClass.setDefaultFont(this, "DEFAULT", "NotoSansCJKkr-Regular.otf");
+        FontClass.setDefaultFont(this, "MONOSPACE", "NotoSansCJKkr-Regular.otf");
+        FontClass.setDefaultFont(this, "SERIF", "NotoSansCJKkr-Medium.otf");
+        FontClass.setDefaultFont(this, "SANS_SERIF", "NotoSansCJKkr-Light.otf");
+    */}
 }

@@ -79,8 +79,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        bUserBlog = new Bundle();
-        bUserBlog.putString(DefineNetwork.BLOG_KEY, PropertyManager.getInstance().mUser.sBlogKey);
+
         culture = getLayoutInflater().inflate(R.layout.view_image, null);
         fan = getLayoutInflater().inflate(R.layout.view_image, null);
         create = getLayoutInflater().inflate(R.layout.view_image, null);
@@ -103,6 +102,9 @@ public class MainActivity extends AppCompatActivity {
         mFM = getSupportFragmentManager();
         vTabHost = (FragmentTabHost) findViewById(R.id.tabHost);
         vTabHost.setup(this, mFM, R.id.realtabcontent);
+
+        bUserBlog = new Bundle();
+        bUserBlog.putString(DefineNetwork.BLOG_KEY, PropertyManager.getInstance().mUser.sBlogKey);
 
         vTabHost.addTab(vTabHost.newTabSpec(DefineContentType.MAIN_TAB_CULTURE).setIndicator(culture), CultureFragment.class, null);
         vTabHost.addTab(vTabHost.newTabSpec(DefineContentType.MAIN_TAB_FAN).setIndicator(fan), FanFragment.class, null);
@@ -136,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
                                             cultureListFragment.setArguments(bundle);
                                             fragment.getChildFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                                             fragment.getChildFragmentManager().beginTransaction().commit();
-                                            fragment.getChildFragmentManager().beginTransaction().replace(((MainTab) fragment).getContainer(), cultureListFragment).commitAllowingStateLoss();
+                                            fragment.getChildFragmentManager().beginTransaction().replace(((MainTab) fragment).getContainer(), cultureListFragment, DefineContentType.MAIN_TAB_CULTURE).commitAllowingStateLoss();
                                         }
                                     } else if (tabId.equalsIgnoreCase(DefineContentType.MAIN_TAB_FAN)) {
                                         if (vTabHost.getCurrentTabTag().equalsIgnoreCase(DefineContentType.MAIN_TAB_FAN)) {
@@ -147,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                                             fanMainFragment.setArguments(b);
                                             fragment.getChildFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                                             fragment.getChildFragmentManager().beginTransaction().commit();
-                                            fragment.getChildFragmentManager().beginTransaction().replace(((MainTab) fragment).getContainer(), fanMainFragment).commitAllowingStateLoss();
+                                            fragment.getChildFragmentManager().beginTransaction().replace(((MainTab) fragment).getContainer(), fanMainFragment, DefineContentType.MAIN_TAB_FAN).commitAllowingStateLoss();
                                         }
                                     } else if (tabId.equalsIgnoreCase(DefineContentType.MAIN_TAB_NOTIFICATION)) {
                                         if (vTabHost.getCurrentTabTag().equalsIgnoreCase(DefineContentType.MAIN_TAB_NOTIFICATION)) {
@@ -155,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
                                             NotificationMainFragment notificationMainFragment = new NotificationMainFragment();
                                             fragment.getChildFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                                             fragment.getChildFragmentManager().beginTransaction().commit();
-                                            fragment.getChildFragmentManager().beginTransaction().replace(((MainTab) fragment).getContainer(), notificationMainFragment).commitAllowingStateLoss();
+                                            fragment.getChildFragmentManager().beginTransaction().replace(((MainTab) fragment).getContainer(), notificationMainFragment, DefineContentType.MAIN_TAB_NOTIFICATION).commitAllowingStateLoss();
                                         }
                                     } else if (tabId.equalsIgnoreCase(DefineContentType.MAIN_TAB_MYBLOG)) {
                                         if (vTabHost.getCurrentTabTag().equalsIgnoreCase(DefineContentType.MAIN_TAB_MYBLOG)) {
@@ -164,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
                                             blogMainFragment.setArguments(bUserBlog);
                                             fragment.getChildFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                                             fragment.getChildFragmentManager().beginTransaction().commit();
-                                            fragment.getChildFragmentManager().beginTransaction().replace(((MainTab) fragment).getContainer(), blogMainFragment).commitAllowingStateLoss();
+                                            fragment.getChildFragmentManager().beginTransaction().replace(((MainTab) fragment).getContainer(), blogMainFragment, DefineContentType.MAIN_TAB_MYBLOG).commitAllowingStateLoss();
                                         }
                                     }
                                 }
@@ -203,7 +205,8 @@ public class MainActivity extends AppCompatActivity {
             mHandleSeach.postDelayed(mRunSearch, 30);
         } else {
             vTabHost.setCurrentTabByTag(DefineContentType.MAIN_TAB_FAN);
-            fanFragment.getChildFragmentManager().beginTransaction().addToBackStack(null).replace((fanFragment).getContainer(), new SearchTripleFragment(), DefineContentType.FRAGMENT_TAG_SEARCH).commitAllowingStateLoss();
+            //fanFragment.getChildFragmentManager().beginTransaction().addToBackStack(null).replace((fanFragment).getContainer(), new SearchTripleFragment(), DefineContentType.FRAGMENT_TAG_SEARCH).commitAllowingStateLoss();
+            fanFragment.getChildFragmentManager().beginTransaction().replace((fanFragment).getContainer(), new SearchTripleFragment(), DefineContentType.FRAGMENT_TAG_SEARCH).commitAllowingStateLoss();
         }
     }
 
@@ -259,12 +262,12 @@ public class MainActivity extends AppCompatActivity {
             case DefineContentType.TO_FAN_LIST:
                 FanMainFragment fanMainFragment = new FanMainFragment();
                 fanMainFragment.setArguments(intent.getExtras());
-                fragment.getChildFragmentManager().beginTransaction().addToBackStack(null).replace(((MainTab) fragment).getContainer(), fanMainFragment).commitAllowingStateLoss();
+                fragment.getChildFragmentManager().beginTransaction().addToBackStack(null).replace(((MainTab) fragment).getContainer(), fanMainFragment, DefineContentType.FRAGMENT_TAG_FAN).commitAllowingStateLoss();
                 break;
             case DefineContentType.TO_BLOG: {
                 BlogMainFragment blogMainFragment = new BlogMainFragment();
                 blogMainFragment.setArguments(intent.getExtras());
-                fragment.getChildFragmentManager().beginTransaction().addToBackStack(null).replace(((MainTab) fragment).getContainer(), blogMainFragment).commitAllowingStateLoss();
+                fragment.getChildFragmentManager().beginTransaction().addToBackStack(null).replace(((MainTab) fragment).getContainer(), blogMainFragment,  DefineContentType.FRAGMENT_TAG_MY_BLOG).commitAllowingStateLoss();
                 break;
             }
             case DefineContentType.TO_DETAIL_IMGAE: {
@@ -286,12 +289,17 @@ public class MainActivity extends AppCompatActivity {
             case DefineContentType.TO_SPACE: {
                 SpaceFragment spaceFragment = new SpaceFragment();
                 spaceFragment.setArguments(intent.getExtras());
-                fragment.getChildFragmentManager().beginTransaction().addToBackStack(null).replace(((MainTab) fragment).getContainer(), spaceFragment).commit();
+                fragment.getChildFragmentManager().beginTransaction().addToBackStack(null).replace(((MainTab) fragment).getContainer(), spaceFragment , DefineContentType.FRAGMENT_TAG_SPACE).commitAllowingStateLoss();
                 break;
             }
             case DefineContentType.TO_CULTURE_LOCAL: {
-                fragment.getChildFragmentManager().beginTransaction().addToBackStack(null).replace(((MainTab) fragment).getContainer(), new CultureLocalFragment()).commit();
+                fragment.getChildFragmentManager().beginTransaction().addToBackStack(null).replace(((MainTab) fragment).getContainer(), new CultureLocalFragment(), DefineContentType.FRAGMENT_TAG_CULTURE).commitAllowingStateLoss();
                 break;
+            }
+            case DefineContentType.TO_SEARCH_TRIPLE:{
+                SearchTripleFragment searchTripleFragment = new SearchTripleFragment();
+                searchTripleFragment.setArguments(intent.getExtras());
+                fragment.getChildFragmentManager().beginTransaction().addToBackStack(null).replace(((MainTab) fragment).getContainer(), searchTripleFragment).commitAllowingStateLoss();
             }
 
         }
