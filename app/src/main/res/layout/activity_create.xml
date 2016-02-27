@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.release.indeepen.create.CreateActivity">
+
+    <ImageView
+        android:id="@+id/btn_create_image"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/create_picture"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:scaleType="centerCrop">
+
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/btn_create_picture"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/create_photo"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:scaleType="centerCrop">
+
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/btn_create_music"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/create_music"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:scaleType="centerCrop">
+
+    </ImageView>
+
+    <LinearLayout
+        android:id="@+id/btn_create_music_add"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#4873a6"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:scaleType="centerCrop"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/btn_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/music_photo_icon"
+            android:paddingLeft="80dp"
+            android:paddingTop="18dp" />
+
+        <Button
+            android:id="@+id/btn_video"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/music_video_icon" />
+
+        <Button
+            android:id="@+id/btn_music"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/music_mymusic_icon" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/btn_create_media"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/create_video"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:scaleType="centerCrop">
+
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/btn_create_culture"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/create_culture"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:scaleType="centerCrop">
+
+    </ImageView>
+</LinearLayout>

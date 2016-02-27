@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#b7000000"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="150dp"
+        android:background="#ffffff"
+        android:paddingBottom="20dp"
+        android:paddingLeft="32dp"
+        android:paddingRight="32dp"
+        android:paddingTop="20dp">
+
+        <Button
+            android:id="@+id/pop_emo_all"
+            android:layout_width="45dp"
+            android:layout_height="65dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/popup_emotion_all" />
+
+        <Button
+            android:id="@+id/pop_emo_empty"
+            android:layout_width="45dp"
+            android:layout_height="65dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="30.5dp"
+            android:layout_toEndOf="@+id/pop_emo_all"
+            android:background="@drawable/popup_emotion_empty" />
+
+        <Button
+            android:id="@+id/pop_emo_happy"
+            android:layout_width="45dp"
+            android:layout_height="65dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="30.5dp"
+            android:layout_toEndOf="@+id/pop_emo_empty"
+            android:background="@drawable/popup_emotion_happy" />
+
+        <Button
+            android:id="@+id/pop_emo_love"
+            android:layout_width="45dp"
+            android:layout_height="65dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignTop="@+id/pop_emo_sad"
+            android:background="@drawable/popup_emotion_love" />
+
+        <Button
+            android:id="@+id/pop_emo_sad"
+            android:layout_width="45dp"
+            android:layout_height="65dp"
+            android:layout_below="@+id/pop_emo_empty"
+            android:layout_marginLeft="30.5dp"
+            android:layout_toEndOf="@+id/pop_emo_all"
+            android:background="@drawable/popup_emotion_sad" />
+
+        <Button
+            android:id="@+id/pop_emo_angry"
+            android:layout_width="45dp"
+            android:layout_height="65dp"
+            android:layout_below="@+id/pop_emo_empty"
+            android:layout_marginLeft="30.5dp"
+            android:layout_toEndOf="@+id/pop_emo_empty"
+            android:background="@drawable/popup_emotion_angry" />
+
+    </RelativeLayout>
+</RelativeLayout>

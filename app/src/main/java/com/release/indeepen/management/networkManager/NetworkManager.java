@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.os.Looper;
 
 import java.io.IOException;
-import java.net.CookieHandler;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -21,14 +20,7 @@ public class NetworkManager {
 
     private static NetworkManager instance;
     ThreadPoolExecutor mExecutor;
-
-
-    public static NetworkManager getInstance() {
-        if (instance == null) {
-            instance = new NetworkManager();
-        }
-        return instance;
-    }
+    Handler mHandler = new Handler(Looper.getMainLooper());
 
     private NetworkManager() {
         mExecutor = new ThreadPoolExecutor(5, 64, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
@@ -53,12 +45,13 @@ public class NetworkManager {
         return client;
     }*/
 
-    public interface OnResultListener<T> {
-        public void onSuccess(T result);
-        public void onFail(int code);
+    public static NetworkManager getInstance() {
+        if (instance == null) {
+            instance = new NetworkManager();
+        }
+        return instance;
     }
 
-    Handler mHandler = new Handler(Looper.getMainLooper());
     public void loginFacebookToken(Context context, String accessToken, final String result ,
                                    final OnResultListener<String> listener) {
         mHandler.postDelayed(new Runnable() {
@@ -88,8 +81,14 @@ public class NetworkManager {
         }, 1000);
     }
 
-
     public ThreadPoolExecutor getExecutor(){
         return mExecutor;
+    }
+
+
+    public interface OnResultListener<T> {
+        void onSuccess(T result);
+
+        void onFail(int code);
     }
 }

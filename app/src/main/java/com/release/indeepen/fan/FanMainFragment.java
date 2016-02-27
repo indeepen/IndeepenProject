@@ -21,7 +21,6 @@ import com.release.indeepen.DefineNetwork;
 import com.release.indeepen.R;
 import com.release.indeepen.content.ContentData;
 import com.release.indeepen.content.OptionView;
-import com.release.indeepen.content.art.ContentYoutubeData;
 import com.release.indeepen.content.art.singleList.ContentSingleListAdapter;
 import com.release.indeepen.content.art.singleList.SingleImageView;
 import com.release.indeepen.content.art.singleList.SingleMusicView;
@@ -41,16 +40,16 @@ import java.util.List;
  */
 public class FanMainFragment extends Fragment {
 
-    ListView vList;
-    ContentSingleListAdapter mAdapter;
-    FanHeaderView vHeader;
     public PopupEmotion emotion;
     public PopupCategory category;
-    boolean isLastItem;
-    boolean isStart;
     public int nEmotion;
     public int nCategory;
     public Button vBtnEmo, vBtnCategory;
+    ListView vList;
+    ContentSingleListAdapter mAdapter;
+    FanHeaderView vHeader;
+    boolean isLastItem;
+    boolean isStart;
     int nSaveIdx = -1;
     int nSaveTop = 0;
     int postion;
@@ -122,11 +121,7 @@ public class FanMainFragment extends Fragment {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 
-                if (totalItemCount > 0 && (firstVisibleItem + visibleItemCount >= totalItemCount - 1)) {
-                    isLastItem = true;
-                } else {
-                    isLastItem = false;
-                }
+                isLastItem = totalItemCount > 0 && (firstVisibleItem + visibleItemCount >= totalItemCount - 1);
             }
         });
 

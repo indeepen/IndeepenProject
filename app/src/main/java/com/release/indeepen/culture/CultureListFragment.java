@@ -1,11 +1,9 @@
 package com.release.indeepen.culture;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.Gravity;
@@ -13,18 +11,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.release.indeepen.DefineContentType;
 import com.release.indeepen.DefineNetwork;
 import com.release.indeepen.MainActivity;
 import com.release.indeepen.R;
-import com.release.indeepen.content.ContentData;
 import com.release.indeepen.content.OptionView;
-import com.release.indeepen.content.art.singleList.ContentSingleListAdapter;
 import com.release.indeepen.content.art.singleList.SingleImageView;
 import com.release.indeepen.content.art.singleList.SingleMusicView;
 import com.release.indeepen.content.art.singleList.SingleYoutubeView;
@@ -42,6 +36,9 @@ import java.util.List;
  */
 public class CultureListFragment extends Fragment {
 
+    public TypePopupWindow popup_type;
+    public DatePopupWindow popup_date;
+    public Button btn_local, btn_type, btn_date;
     ListView vList;
     CultureAdapter mAdapter;
     CultureHeaderView vHeader;
@@ -52,9 +49,6 @@ public class CultureListFragment extends Fragment {
     int nType;
     FragmentManager mFM;
     CultureLocalFragment mLocalF;
-    public TypePopupWindow popup_type;
-    public DatePopupWindow popup_date;
-    public Button btn_local, btn_type, btn_date;
     int nSaveIdx = -1;
     int nSaveTop = 0;
 
@@ -88,11 +82,7 @@ public class CultureListFragment extends Fragment {
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (totalItemCount > 0 && (firstVisibleItem + visibleItemCount >= totalItemCount - 1)) {
-                    isLastItem = true;
-                } else {
-                    isLastItem = false;
-                }
+                isLastItem = totalItemCount > 0 && (firstVisibleItem + visibleItemCount >= totalItemCount - 1);
             }
         });
 

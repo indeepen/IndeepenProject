@@ -2,11 +2,9 @@ package com.release.indeepen.create.selectMedia;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.ViewGroup;
 import android.widget.Checkable;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import com.release.indeepen.R;
 
@@ -28,7 +26,7 @@ public class CheckYoutubeItemView extends FrameLayout implements Checkable {
         inflate(getContext(), R.layout.checked_youtube_item, this);
         checkView = (ImageView) findViewById(R.id.image_select_icon);
         imageView = (ImageView) findViewById(R.id.image_icon);
-        FrameLayout.LayoutParams param = new FrameLayout.LayoutParams((int)(getContext().getResources().getDisplayMetrics().widthPixels/2)-10, (int)(getContext().getResources().getDisplayMetrics().widthPixels/2)-10);
+        FrameLayout.LayoutParams param = new FrameLayout.LayoutParams(getContext().getResources().getDisplayMetrics().widthPixels / 2 - 10, getContext().getResources().getDisplayMetrics().widthPixels / 2 - 10);
         checkView.setLayoutParams(param);
         imageView.setLayoutParams(param);
     }

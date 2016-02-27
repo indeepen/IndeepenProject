@@ -22,6 +22,11 @@ import com.squareup.picasso.Picasso;
  */
 public class CommentItemView extends LinearLayout {
 
+    ImageView image_user;
+    TextView text_username, text_comment, text_uploadtime;
+    Comments mData;
+    EditText text_input;
+    OnImageClickListener mListener;
     public CommentItemView(Context context) {
         super(context);
         init();
@@ -31,17 +36,6 @@ public class CommentItemView extends LinearLayout {
         super(context, attrs);
         init();
     }
-
-    ImageView image_user;
-    TextView text_username, text_comment, text_uploadtime;
-    Comments mData;
-    EditText text_input;
-
-    public interface OnImageClickListener {
-        public void onImageClick(CommentItemView view, Comments date);
-    }
-
-    OnImageClickListener mListener;
 
     public void setOnImageClickListener(OnImageClickListener listener) {
         mListener = listener;
@@ -93,6 +87,10 @@ public class CommentItemView extends LinearLayout {
         text_username.setText(mData.username);
         text_comment.setText(mData.comment);
         text_uploadtime.setText(mData.uploadtime);*/
+    }
+
+    public interface OnImageClickListener {
+        void onImageClick(CommentItemView view, Comments date);
     }
 
     /*private void initData() {

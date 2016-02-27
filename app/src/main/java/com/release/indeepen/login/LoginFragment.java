@@ -24,17 +24,14 @@ import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
 import com.release.indeepen.DefineNetwork;
 import com.release.indeepen.MainActivity;
 import com.release.indeepen.R;
-import com.release.indeepen.management.networkManager.NetworkManager;
 import com.release.indeepen.management.networkManager.NetworkProcess;
 import com.release.indeepen.management.networkManager.NetworkRequest;
 import com.release.indeepen.management.networkManager.netLogin.LoginController;
 import com.release.indeepen.management.networkManager.netLogin.POSTLoginRequest;
 import com.release.indeepen.management.networkManager.netLogin.data.IndeepenLoginResult;
-import com.release.indeepen.management.networkManager.netLogin.data.LoginData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,12 +40,10 @@ import java.util.List;
 
 public class LoginFragment extends Fragment {
 
-    public LoginFragment() {
-        // Required empty public constructor
-    }
-
+    public static final int MODE_CHECK = -1;
+    public static final int MODE_PROFILE = 1;
+    public static final int MODE_POST = 2;
     CallbackManager callbackManager = CallbackManager.Factory.create();
-
     ImageButton btn_login;
     EditText email, pw;
     String mFacebookEmail;
@@ -56,8 +51,23 @@ public class LoginFragment extends Fragment {
     ImageButton facebook;
     boolean isFill = true;
     AccessTokenTracker tracker;
+    int mode = MODE_CHECK;
 
+    public LoginFragment() {
+        // Required empty public constructor
+    }
 
+    public final static boolean isValidEmail(String email) {
+        if (TextUtils.isEmpty(email)) {
+            return false;
+        } else {
+            return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+        }
+    }
+
+    public final static boolean isValidPW(String pw) {
+        return !TextUtils.isEmpty((pw));
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -345,11 +355,6 @@ public class LoginFragment extends Fragment {
         request.executeAsync();
     }
 
-    public static final int MODE_CHECK = -1;
-    public static final int MODE_PROFILE = 1;
-    public static final int MODE_POST = 2;
-    int mode = MODE_CHECK;
-
     private void login(List<String> permissions) {
         login(permissions, true);
     }
@@ -442,20 +447,5 @@ public class LoginFragment extends Fragment {
         Log.d("myLog", "requestCode  " + requestCode);
         Log.d("myLog", "resultCode" + resultCode);
         Log.d("myLog", "data  " + data.toString());
-    }
-
-    public final static boolean isValidEmail(String email) {
-        if (TextUtils.isEmpty(email)) {
-            return false;
-        } else {
-            return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
-        }
-    }
-
-    public final static boolean isValidPW(String pw) {
-        if (TextUtils.isEmpty((pw))) {
-            return false;
-        }
-        return true;
     }
 }

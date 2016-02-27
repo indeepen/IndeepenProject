@@ -1,0 +1,87 @@
+<resources>
+    <string name="app_name">Indeepen</string>
+    <string name="action_settings">Settings</string>
+    <string name="fan">Fan+</string>
+    <string name="imissyou">I miss you</string>
+    <string name="like">좋아요</string>
+    <string name="comment">댓글</string>
+    <string name="option">옵션</string>
+
+    <string name="myfans">My Fan들</string>
+    <string name="myartists">My 예술가들</string>
+
+    <string name="emo_all">모든감정</string>
+    <string name="emo_empty">감정없음</string>
+    <string name="emo_happy">기쁨</string>
+    <string name="emo_love">사랑</string>
+    <string name="emo_sad">슬픔</string>
+    <string name="emo_angry">화남</string>
+
+    <string name="cate_all">모든분야</string>
+    <string name="cate_paint">그림</string>
+    <string name="cate_picture">사진</string>
+    <string name="cate_music">음악</string>
+    <string name="cate_video">영상예술</string>
+    <string name="cate_culture">문화</string>
+
+    <string name="fan_emotion">감정</string>
+    <string name="fan_category">분야</string>
+
+    <string name="space_location">공간위치</string>
+    <string name="space_revome">공간삭제</string>
+
+    <string name="action_search">검색</string>
+    <string name="action_select">선택</string>
+    <string name="action_upload">등록</string>
+    <string name="action_edit">수정</string>
+
+    <string name="text_hint">텍스트를 입력하세요.</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="facebook_app_id">880187738696682</string>
+
+
+    <string name="button_authorize">Authorize</string>
+    <string name="button_record">다음</string>
+    <string name="button_pick">새 동영상 업로드</string>
+    <string name="button_upload">유튜브 업로드</string>
+    <string name="button_submit">SUBMIT TO YTDL</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_display_message">My Message</string>
+    <string name="google_play_not_available">Google Play Services not available</string>
+    <string name="youtube_upload_started">YouTube Direct Lite upload started</string>
+    <string name="connection_to_google_play_failed">Connection to Play Services failed.</string>
+    <string name="youtube_upload">YouTube upload</string>
+    <string name="not_signed_in">Not signed in</string>
+    <string name="dev_setup_explanation">If you\'re seeing this screen, congratulations! You\'ve set up the dependencies for YouTube Direct Lite correctly. You just need to set up the following for the app to work correctly:</string>
+    <string name="error">Error</string>
+    <string name="error_format">[Error] %s</string>
+    <string name="refresh">Refresh</string>
+    <string name="accounts">Accounts</string>
+    <string name="initiation_started">Initiation Started</string>
+    <string name="initiation_completed">Initiation Completed</string>
+    <string name="upload_in_progress">Direct Lite upload in progress</string>
+    <string name="yt_upload_completed">YouTube Upload Completed</string>
+    <string name="upload_completed">Upload completed</string>
+    <string name="upload_not_started">Upload Not Started!</string>
+    <string name="yt_upload_failed">YouTube Upload Failed</string>
+    <string name="reauth_required">Re-login required</string>
+    <string name="please_try_again">Please try again</string>
+    <string name="cant_access_play">Can\'t access to Google Play services</string>
+    <string name="title_activity_play">Click below to submit</string>
+    <string name="send">Click send</string>
+    <string name="title_activity_review">Click below to upload</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="pick_one_of_your_videos_to_submit">Submit an existing YouTube video or upload a new video using the options below</string>
+    <string name="no_videos_to_show_here_">Wait please.</string>
+    <string name="avatar">avatar</string>
+    <string name="pick_or_record_a_video_to_upload">Upload an existing video from your device or record a new one</string>
+    <string name="see_the_newly_uploaded_video">See the newly uploaded video</string>
+    <string name="watch_your_video">Watch your video</string>
+    <string name="video_submitted_to_ytdl">Video submitted to YTDL</string>
+    <string name="playing_uploaded_video">Playing uploaded video</string>
+    <string name="playing_the_video_in_upload_progress">Playing the video in upload progress</string>
+
+</resources>

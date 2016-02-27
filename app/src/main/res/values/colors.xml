@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="colorCheck">#9b9b9b</color>
+    <color name="colorIndeepen">#6a1b9a</color>
+    <color name="colorWhite">#ffffff</color>
+    <color name="createbackground">#263138</color>
+
+    <color name="colorE1">#e1e1e1</color>
+    <color name="colorC9">#c9c9c9</color>
+    <color name="colorTransparent">#00000000</color>
+    <color name="colorShadow">#AA000000</color>
+    <color name="color0">#000000</color>
+    <color name="colorA">#aaaaaa</color>
+    <color name="color7D">#7D7D7D</color>
+    <color name="colorText5">#555555</color>
+    <color name="colorPopupBack">#b7000000</color>
+    <color name="colorMenuBackground">#535353</color>
+    <color name="colorToolbar">#263138</color>
+    <color name="colorText95">#959595</color>
+    <color name="colorText45">#454545</color>
+    <color name="colorText75">#757575</color>
+    <color name="colorTextname">#6A1B9A</color>
+
+</resources>

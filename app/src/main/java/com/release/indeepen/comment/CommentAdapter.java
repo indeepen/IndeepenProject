@@ -14,16 +14,13 @@ import java.util.List;
  */
 public class CommentAdapter  extends BaseAdapter implements  CommentItemView.OnImageClickListener {
     List<Comments> items = new ArrayList<Comments>();
-
-    public interface OnAdapterImageListener {
-        public void onAdapterImageClick(CommentAdapter adapter, CommentItemView view, Comments data);
-    }
     OnAdapterImageListener mListener;
+    CommentItemView.OnImageClickListener mImageClickListener;
+
     public void setOnAdapterImageListener(OnAdapterImageListener listener) {
         mListener = listener;
     }
 
-    CommentItemView.OnImageClickListener mImageClickListener;
     public void setOnImageClickListener(CommentItemView.OnImageClickListener listener) {
         mImageClickListener = listener;
         notifyDataSetChanged();
@@ -79,6 +76,10 @@ public class CommentAdapter  extends BaseAdapter implements  CommentItemView.OnI
         if (mListener != null) {
             mListener.onAdapterImageClick(this, view, data);
         }
+    }
+
+    public interface OnAdapterImageListener {
+        void onAdapterImageClick(CommentAdapter adapter, CommentItemView view, Comments data);
     }
 }
 

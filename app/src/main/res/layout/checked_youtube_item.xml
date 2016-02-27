@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <FrameLayout
+        android:id="@+id/frameLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center">
+
+        <ImageView
+            android:id="@+id/image_icon"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center_horizontal|top"
+            android:padding="2dp"
+            android:scaleType="centerCrop"
+
+            />
+
+        <ImageView
+            android:id="@+id/image_select_icon"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="right|center_vertical"
+            android:layout_toEndOf="@+id/frameLayout2"
+            android:scaleType="centerCrop"
+            android:src="@drawable/cameraphoto_selected_edit"
+            android:visibility="invisible" />
+
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/text_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/frameLayout2"
+        android:layout_below="@+id/frameLayout2"
+        android:layout_gravity="center_horizontal|bottom"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/colorIndeepen" />
+
+
+</RelativeLayout>

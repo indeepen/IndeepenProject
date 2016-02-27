@@ -11,10 +11,8 @@ import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by lyo on 2015-11-10.
@@ -22,25 +20,19 @@ import java.util.Set;
 public class NetworkProcess<T> implements Runnable {
 
 
+    static final String COOKIES_HEADER = "Set-Cookie";
+    static java.net.CookieManager msCookieManager = new java.net.CookieManager();
     Handler mHandler = new Handler(Looper.getMainLooper());
     NetworkRequest<T> request;
     OnResultListener<T> listener;
     boolean isSession;
     String sCookies;
-    static final String COOKIES_HEADER = "Set-Cookie";
-    static java.net.CookieManager msCookieManager = new java.net.CookieManager();
     int code;
 
 
     public NetworkProcess(NetworkRequest<T> request, OnResultListener<T> listener) {
         this.request = request;
         this.listener = listener;
-    }
-
-    public interface OnResultListener<T> {
-        public void onSuccess(NetworkRequest<T> request, T result);
-
-        public void onFail(NetworkRequest<T> request, int code);
     }
 
     public void saveCookie(HttpURLConnection conn) {
@@ -107,6 +99,12 @@ public class NetworkProcess<T> implements Runnable {
                 }
             }
         });
+    }
+
+    public interface OnResultListener<T> {
+        void onSuccess(NetworkRequest<T> request, T result);
+
+        void onFail(NetworkRequest<T> request, int code);
     }
 
 }

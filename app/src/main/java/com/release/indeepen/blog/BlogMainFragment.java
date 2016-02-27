@@ -52,6 +52,7 @@ import java.util.List;
  * A simple {@link Fragment} subclass.
  */
 public class BlogMainFragment extends Fragment implements View.OnClickListener  /*implements CallbackListener.OnGoActivityListener*/ {
+    public ProfileDialog popup_profile;
     HeaderGridView vTripleGrid;
     TripleGridAdapter mAdapter;
     ImageView vIMGProBack, vthPro;
@@ -67,7 +68,6 @@ public class BlogMainFragment extends Fragment implements View.OnClickListener  
     int nSaveIdx = -1;
     int nSaveTop = 0;
     boolean isMe = false;
-    public ProfileDialog popup_profile;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -148,11 +148,7 @@ public class BlogMainFragment extends Fragment implements View.OnClickListener  
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 
-                if (totalItemCount > 0 && (firstVisibleItem + visibleItemCount >= totalItemCount - 1)) {
-                    isLastItem = true;
-                } else {
-                    isLastItem = false;
-                }
+                isLastItem = totalItemCount > 0 && (firstVisibleItem + visibleItemCount >= totalItemCount - 1);
             }
         });
 

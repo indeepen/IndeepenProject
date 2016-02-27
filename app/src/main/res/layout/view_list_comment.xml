@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
+
+    <ImageView
+        android:id="@+id/image_user"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/text_username"
+        android:layout_marginBottom="8dp"
+        android:src="@drawable/images" />
+
+    <TextView
+        android:id="@+id/text_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_toEndOf="@+id/image_user"
+        android:layout_weight="1"
+        android:text="사용자이름"
+        android:textColor="@color/color0"
+        android:textSize="13sp"
+        android:typeface="serif" />
+
+    <TextView
+        android:id="@+id/text_comment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text_username"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="6dp"
+        android:layout_toEndOf="@+id/image_user"
+        android:layout_weight="1"
+        android:text="댓글 내용"
+        android:textColor="@color/colorText5"
+        android:textSize="13sp"
+        android:typeface="normal" />
+
+    <TextView
+        android:id="@+id/text_uploadtime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="8dp"
+        android:layout_weight="1"
+        android:text="업로드시간"
+        android:textColor="@color/colorC9"
+        android:textSize="12dp"
+        android:typeface="serif" />
+</RelativeLayout>

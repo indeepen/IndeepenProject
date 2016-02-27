@@ -22,7 +22,6 @@ import android.content.IntentSender;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -53,10 +52,10 @@ public class UploadsListFragment extends Fragment implements ConnectionCallbacks
 
     private static final String TAG = UploadsListFragment.class.getName();
     private static Context mContext;
+    UploadedVideoAdapter adapter;
     private Callbacks mCallbacks;
     private GoogleApiClient mGoogleApiClient;
     private GridView mGridView;
-    UploadedVideoAdapter adapter;
 
     public UploadsListFragment() {
     }
@@ -168,11 +167,18 @@ public class UploadsListFragment extends Fragment implements ConnectionCallbacks
         mCallbacks = null;
     }
 
+    public String getSelectedItme() {
+        if (-1 == mGridView.getCheckedItemPosition()) {
+            return "";
+        }
+        return ((VideoData) adapter.getItem(mGridView.getCheckedItemPosition())).getYouTubeId();
+    }
+
     public interface Callbacks {
 
-        public void onVideoSelected(VideoData video);
+        void onVideoSelected(VideoData video);
 
-        public void onConnected(String connectedAccountName);
+        void onConnected(String connectedAccountName);
     }
 
     private class UploadedVideoAdapter extends BaseAdapter {
@@ -215,14 +221,6 @@ public class UploadsListFragment extends Fragment implements ConnectionCallbacks
 
             return convertView;
         }
-    }
-
-
-    public String getSelectedItme(){
-        if(-1 == mGridView.getCheckedItemPosition()){
-            return "";
-        }
-        return ((VideoData)adapter.getItem(mGridView.getCheckedItemPosition())).getYouTubeId();
     }
 
 }

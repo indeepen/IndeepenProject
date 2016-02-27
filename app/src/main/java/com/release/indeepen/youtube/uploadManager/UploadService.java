@@ -20,7 +20,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.WindowManager;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -31,7 +30,6 @@ import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.youtube.YouTube;
 import com.google.common.collect.Lists;
 import com.release.indeepen.R;
-import com.release.indeepen.SharedApplication;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -88,11 +86,7 @@ public class UploadService extends IntentService {
     private static boolean timeoutExpired(long startTime, int timeoutSeconds) {
         long currTime = System.currentTimeMillis();
         long elapsed = currTime - startTime;
-        if (elapsed >= timeoutSeconds * 1000) {
-            return true;
-        } else {
-            return false;
-        }
+        return elapsed >= timeoutSeconds * 1000;
     }
 
     @Override

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/btn_dislike"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:background="@drawable/popup_option_dislike" />
+
+    <Button
+        android:id="@+id/btn_share"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:background="@drawable/popup_option_share" />
+
+    <Button
+        android:id="@+id/btn_modify"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:background="@drawable/popup_option_modify" />
+
+    <Button
+        android:id="@+id/btn_delete"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:background="@drawable/popup_option_delete" />
+</LinearLayout>

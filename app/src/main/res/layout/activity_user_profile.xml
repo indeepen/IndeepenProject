@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="24dp"
+    android:paddingRight="24dp"
+    android:paddingTop="23dp"
+    tools:context="com.release.indeepen.blog.UserProfileActivity">
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="8dp"
+        android:text="기본정보"
+        android:textColor="@color/colorIndeepen" />
+
+    <EditText
+        android:id="@+id/input_blog_artist"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textView2"
+        android:layout_centerHorizontal="true"
+        android:hint="예술 활동 이름" />
+
+    <EditText
+        android:id="@+id/input_blog_introduce"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/input_blog_artist"
+        android:layout_centerHorizontal="true"
+        android:enabled="false"
+        android:gravity="start"
+        android:hint="내 소개"
+        android:minLines="5"
+        android:scrollbars="vertical" />
+
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/input_blog_introduce"
+        android:layout_marginTop="45dp"
+        android:paddingBottom="8dp"
+        android:text="개인정보"
+        android:textColor="@color/colorIndeepen" />
+
+    <ImageView
+        android:id="@+id/img_blog_public"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignTop="@+id/textView5" />
+
+    <EditText
+        android:id="@+id/input_blog_user_name"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textView5"
+        android:layout_centerHorizontal="true"
+        android:enabled="false"
+        android:hint="사용자 이름" />
+
+    <EditText
+        android:id="@+id/input_blog_phone"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/input_blog_user_name"
+        android:layout_centerHorizontal="true"
+        android:ems="15"
+        android:enabled="false"
+        android:hint="전화 번호"
+        android:inputType="phone" />
+
+    <EditText
+        android:id="@+id/input_blog_email"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/input_blog_phone"
+        android:layout_centerHorizontal="true"
+        android:enabled="false"
+        android:hint="이메일"
+
+        android:inputType="textEmailAddress" />
+
+
+</RelativeLayout>

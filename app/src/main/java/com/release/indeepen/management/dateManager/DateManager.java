@@ -11,10 +11,12 @@ import java.util.HashMap;
  * Created by lyo on 2015-11-11.
  */
 public class DateManager {
+    public static HashMap<String, Boolean> hDate = new HashMap<String, Boolean>();
     private static DateManager instance;
 
-    public static HashMap<String, Boolean> hDate = new HashMap<String, Boolean>();
 
+    private DateManager() {
+    }
 
     public static DateManager getInstance(){
         if(null == instance){
@@ -22,8 +24,6 @@ public class DateManager {
         }
         return instance;
     }
-
-    private DateManager(){}
 
     public boolean isEnd(String time) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm");
@@ -60,20 +60,20 @@ public class DateManager {
         GregorianCalendar today = new GregorianCalendar ( );
         today.setTimeInMillis(now);
 
-        int nowYear = today.get ( today.YEAR );
-        int nowMonth = today.get ( today.MONTH ) + 1;
-        int nowDay = today.get ( today.DAY_OF_MONTH );
-        int nowHour = today.get(today.HOUR_OF_DAY);
-        int nowMin = today.get ( today.MINUTE );
-        int nowSec = today.get ( today.SECOND );
+        int nowYear = today.get(Calendar.YEAR);
+        int nowMonth = today.get(Calendar.MONTH) + 1;
+        int nowDay = today.get(Calendar.DAY_OF_MONTH);
+        int nowHour = today.get(Calendar.HOUR_OF_DAY);
+        int nowMin = today.get(Calendar.MINUTE);
+        int nowSec = today.get(Calendar.SECOND);
 
         today.setTimeInMillis(createTime);
-        int timeYear = today.get ( today.YEAR );
-        int timeMonth = today.get ( today.MONTH ) + 1;
-        int timeDay = today.get ( today.DAY_OF_MONTH );
-        int timeHour = today.get ( today.HOUR_OF_DAY );
-        int timeMin = today.get ( today.MINUTE );
-        int timeSec = today.get ( today.SECOND );
+        int timeYear = today.get(Calendar.YEAR);
+        int timeMonth = today.get(Calendar.MONTH) + 1;
+        int timeDay = today.get(Calendar.DAY_OF_MONTH);
+        int timeHour = today.get(Calendar.HOUR_OF_DAY);
+        int timeMin = today.get(Calendar.MINUTE);
+        int timeSec = today.get(Calendar.SECOND);
 
         int year = nowYear - timeYear;
         int month = nowMonth - timeMonth;

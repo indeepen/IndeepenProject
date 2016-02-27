@@ -7,7 +7,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,9 +28,6 @@ import com.release.indeepen.fan.PopupCategory;
 import com.release.indeepen.fan.PopupEmotion;
 import com.release.indeepen.management.networkManager.NetworkProcess;
 import com.release.indeepen.management.networkManager.NetworkRequest;
-import com.release.indeepen.management.networkManager.netArt.ArtController;
-import com.release.indeepen.management.networkManager.netArt.ArtListRequest;
-import com.release.indeepen.management.networkManager.netArt.data.ContentResultList;
 import com.release.indeepen.management.networkManager.netMyBlog.MyBlogContentRequest;
 import com.release.indeepen.management.networkManager.netMyBlog.MyBlogController;
 import com.release.indeepen.management.networkManager.netMyBlog.data.BlogContentList;
@@ -45,11 +41,11 @@ import java.util.List;
  */
 public class SearchTripleFragment extends Fragment {
 
+    public PopupEmotion emotion;
+    public PopupCategory category;
     HeaderGridView vGrid;
     FanHeaderView vHeader;
     TripleGridAdapter mAdapter;
-    public PopupEmotion emotion;
-    public PopupCategory category;
     ImageView actionRealSearch;
     int nSaveIdx = -1;
     int nSaveTop = 0;
@@ -137,11 +133,7 @@ public class SearchTripleFragment extends Fragment {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 
-                if (totalItemCount > 0 && (firstVisibleItem + visibleItemCount >= totalItemCount - 1)) {
-                    isLastItem = true;
-                } else {
-                    isLastItem = false;
-                }
+                isLastItem = totalItemCount > 0 && (firstVisibleItem + visibleItemCount >= totalItemCount - 1);
             }
         });
 

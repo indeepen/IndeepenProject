@@ -42,7 +42,7 @@ public class SearchActivity extends AppCompatActivity {
         pager = (ViewPager) findViewById(R.id.pager);
         mAdapter = new TabsAdapter(this, getSupportFragmentManager(), tabHost, pager);
 
-        vSearchView = (SearchView) ((Toolbar) findViewById(R.id.toolbar_search)).findViewById(R.id.view_search);
+        vSearchView = (SearchView) findViewById(R.id.toolbar_search).findViewById(R.id.view_search);
         vInputkeyword = (EditText) vSearchView.findViewById(R.id.input_search);
         btnSearch = (ImageButton) vSearchView.findViewById(R.id.btn_search);
 

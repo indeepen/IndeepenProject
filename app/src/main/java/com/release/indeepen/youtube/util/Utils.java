@@ -71,7 +71,7 @@ public class Utils {
                 message = details.getMessage();
             }
         } else if (t.getCause() instanceof GoogleAuthException) {
-            message = ((GoogleAuthException) t.getCause()).getMessage();
+            message = t.getCause().getMessage();
         }
         showError(activity, message);
     }

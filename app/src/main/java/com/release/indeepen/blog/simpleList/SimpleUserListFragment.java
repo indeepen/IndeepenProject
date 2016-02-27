@@ -72,11 +72,7 @@ public class SimpleUserListFragment extends Fragment {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 
-                if (totalItemCount > 0 && (firstVisibleItem + visibleItemCount >= totalItemCount - 1)) {
-                    isLastItem = true;
-                } else {
-                    isLastItem = false;
-                }
+                isLastItem = totalItemCount > 0 && (firstVisibleItem + visibleItemCount >= totalItemCount - 1);
             }
         });
 

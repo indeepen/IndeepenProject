@@ -1,6 +1,5 @@
 package com.release.indeepen.youtube.uploadManager;
 
-import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,7 +9,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-import android.support.v4.app.Fragment;
 
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
@@ -22,9 +20,7 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
-import com.release.indeepen.DefineContentType;
 import com.release.indeepen.R;
-import com.release.indeepen.youtube.MyYoutubeFragment;
 import com.release.indeepen.youtube.util.VideoData;
 
 
@@ -205,9 +201,9 @@ public class PlayActivity extends AppCompatActivity implements
 
     public interface Callbacks {
 
-        public void onVideoSelected(VideoData video);
+        void onVideoSelected(VideoData video);
 
-        public void onResume();
+        void onResume();
 
     }
 }

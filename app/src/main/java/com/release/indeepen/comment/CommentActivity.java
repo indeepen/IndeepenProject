@@ -18,12 +18,10 @@ import com.release.indeepen.content.ContentData;
 import com.release.indeepen.login.PropertyManager;
 import com.release.indeepen.management.networkManager.NetworkProcess;
 import com.release.indeepen.management.networkManager.NetworkRequest;
-import com.release.indeepen.management.networkManager.netArt.data.Writer;
 import com.release.indeepen.management.networkManager.netComment.CommentController;
 import com.release.indeepen.management.networkManager.netComment.CommentListRequest;
-import com.release.indeepen.management.networkManager.netComment.data.CommentResult;
 import com.release.indeepen.management.networkManager.netComment.POSTCommentRequest;
-import com.release.indeepen.management.networkManager.netComment.data.Comments;
+import com.release.indeepen.management.networkManager.netComment.data.CommentResult;
 
 
 public class CommentActivity extends AppCompatActivity {
@@ -104,11 +102,7 @@ public class CommentActivity extends AppCompatActivity {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 
-                if (firstVisibleItem == 0 && visibleItemCount > 8 && totalItemCount > 19) {
-                    isLastItem = true;
-                } else {
-                    isLastItem = false;
-                }
+                isLastItem = firstVisibleItem == 0 && visibleItemCount > 8 && totalItemCount > 19;
             }
         });
 
